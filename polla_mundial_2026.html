@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polla Mundial 2026</title>
+<style>
+:root{--bg:#0a0e1a;--card:#131929;--card2:#1a2235;--accent:#e8b923;--accent2:#c0392b;--green:#27ae60;--blue:#2980b9;--text:#f0f0f0;--muted:#8892a4;--border:#2a3450;--radius:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
+a{color:var(--accent)}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#0a0e1a 0%,#1a1040 50%,#0a1a30 100%);border-bottom:2px solid var(--accent);padding:20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+header h1{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#e8b923,#fff,#e8b923);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header p{color:var(--muted);font-size:.9rem;margin-top:4px}
+.header-btns{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.btn{border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+.btn-gold{background:var(--accent);color:#000}
+.btn-gold:hover{background:#f5cc2a;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--muted);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#2ecc71}
+.btn-red{background:var(--accent2);color:#fff}
+.btn-red:hover{background:#e74c3c}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:#3498db}
+.btn-sm{padding:5px 12px;font-size:.78rem}
+
+/* TEST MODE BANNER */
+#testBanner{display:none;background:#7d3cff;color:#fff;text-align:center;padding:6px;font-size:.82rem;font-weight:600;letter-spacing:1px}
+#testBanner.active{display:block}
+
+/* CONTAINER */
+.container{max-width:1100px;margin:0 auto;padding:16px}
+
+/* NICKNAME CARD */
+.nick-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px auto;max-width:1100px}
+.nick-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nick-row input{flex:1;min-width:180px;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:6px;font-size:1rem}
+.nick-row input:focus{outline:none;border-color:var(--accent)}
+.score-legend{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+.score-pill{padding:5px 14px;border-radius:20px;font-size:.8rem;font-weight:600}
+.pill-gold{background:rgba(232,185,35,.15);border:1px solid var(--accent);color:var(--accent)}
+.pill-silver{background:rgba(41,128,185,.15);border:1px solid var(--blue);color:#5dade2}
+.pill-red{background:rgba(192,57,43,.15);border:1px solid var(--accent2);color:#e74c3c}
+
+/* TABS */
+.tabs-wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.tabs::-webkit-scrollbar{height:4px}
+.tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.tab-btn{flex-shrink:0;padding:8px 14px;background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:6px 6px 0 0;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s;white-space:nowrap}
+.tab-btn:hover{color:var(--text);border-color:var(--accent)}
+.tab-btn.active{background:var(--card2);border-bottom-color:var(--card2);color:var(--accent)}
+
+/* TAB CONTENT */
+.tab-content{display:none;max-width:1100px;margin:0 auto;padding:0 16px 16px}
+.tab-content.active{display:block}
+.group-block{margin-bottom:24px}
+.group-title{font-size:.85rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding:4px 10px;background:rgba(232,185,35,.08);border-left:3px solid var(--accent);border-radius:0 4px 4px 0}
+
+/* MATCH CARD */
+.match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.match-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;transition:border-color .2s;position:relative}
+.match-card:hover{border-color:var(--accent)}
+.match-card.locked{opacity:.65}
+.match-card.locked::after{content:'🔒 CERRADO';position:absolute;top:8px;right:8px;font-size:.7rem;background:var(--accent2);color:#fff;padding:2px 7px;border-radius:4px;font-weight:700}
+.match-card.has-result{border-color:var(--green)}
+.match-card.correct5{border-color:#f1c40f;background:rgba(241,196,15,.05)}
+.match-card.correct2{border-color:var(--blue);background:rgba(41,128,185,.05)}
+
+.match-meta{font-size:.73rem;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;gap:4px;flex-wrap:wrap}
+.match-meta .venue{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.match-time-badge{font-size:.7rem;padding:2px 7px;border-radius:4px;font-weight:600;white-space:nowrap}
+.time-ok{background:rgba(39,174,96,.2);color:#2ecc71}
+.time-soon{background:rgba(243,156,18,.2);color:#f39c12;animation:pulse 1.5s infinite}
+.time-locked{background:rgba(192,57,43,.2);color:#e74c3c}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.teams-row{display:flex;align-items:center;gap:8px;margin:8px 0}
+.team{display:flex;align-items:center;gap:6px;flex:1}
+.team.away{justify-content:flex-end;flex-direction:row-reverse}
+.flag{font-size:1.4rem}
+.team-name{font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+
+.score-inputs{display:flex;align-items:center;gap:6px;justify-content:center}
+.score-in{width:44px;height:36px;background:var(--card2);border:1px solid var(--border);color:var(--text);text-align:center;font-size:1.1rem;font-weight:700;border-radius:6px;-moz-appearance:textfield}
+.score-in::-webkit-inner-spin-button,.score-in::-webkit-outer-spin-button{-webkit-appearance:none}
+.score-in:focus{outline:none;border-color:var(--accent)}
+.score-in:disabled{cursor:not-allowed;opacity:.5}
+.score-sep{font-size:1.2rem;font-weight:700;color:var(--muted)}
+
+.result-row{margin-top:8px;text-align:center;font-size:.78rem}
+.result-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-weight:700}
+.res-correct5{background:rgba(241,196,15,.2);color:#f1c40f}
+.res-correct2{background:rgba(41,128,185,.2);color:#5dade2}
+.res-wrong{background:rgba(192,57,43,.2);color:#e74c3c}
+.res-pending{background:rgba(136,146,164,.15);color:var(--muted)}
+
+/* SAVE BAR */
+.save-bar{position:sticky;bottom:0;z-index:90;background:rgba(10,14,26,.95);border-top:1px solid var(--border);padding:10px 16px;display:flex;justify-content:center;gap:10px;align-items:center;backdrop-filter:blur(8px)}
+.save-status{font-size:.82rem;color:var(--muted)}
+.save-status.unsaved{color:#f39c12}
+.save-status.saved{color:var(--green)}
+
+/* LEADERBOARD */
+.lb-section{max-width:1100px;margin:20px auto;padding:0 16px 32px}
+.lb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.lb-header h2{font-size:1.2rem;font-weight:800}
+.lb-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.lb-table th{background:var(--card2);padding:10px 12px;text-align:left;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
+.lb-table td{padding:10px 12px;border-bottom:1px solid var(--border);background:var(--card)}
+.lb-table tr:hover td{background:var(--card2)}
+.lb-table tr.me td{background:rgba(232,185,35,.06);border-color:rgba(232,185,35,.3)}
+.pos-badge{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+.pos-1{background:#f1c40f;color:#000}
+.pos-2{background:#95a5a6;color:#000}
+.pos-3{background:#cd7f32;color:#fff}
+.pos-n{background:var(--border);color:var(--muted)}
+
+/* ADMIN */
+.admin-section{max-width:1100px;margin:0 auto;padding:0 16px 32px;display:none}
+.admin-section.open{display:block}
+.admin-card{background:var(--card);border:1px solid #7d3cff;border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.admin-card h3{color:#9b59b6;margin-bottom:14px;font-size:1rem}
+.admin-match-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.admin-match-name{flex:1;min-width:160px;font-size:.83rem;color:var(--muted)}
+.res-input{width:38px;height:30px;background:var(--card2);border:1px solid var(--border);color:var(--text);text-align:center;font-size:.9rem;font-weight:700;border-radius:4px;-moz-appearance:textfield}
+.res-input::-webkit-inner-spin-button,.res-input::-webkit-outer-spin-button{-webkit-appearance:none}
+.res-input:focus{outline:none;border-color:#9b59b6}
+.btn-save-res{background:#9b59b6;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.78rem;font-weight:600}
+.btn-save-res:hover{background:#8e44ad}
+.res-saved-badge{font-size:.73rem;color:var(--green)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:400px;width:90%;text-align:center}
+.modal h3{margin-bottom:12px;font-size:1.1rem}
+.modal input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:6px;font-size:1rem;margin:8px 0 14px}
+.modal input:focus{outline:none;border-color:var(--accent)}
+
+/* RESPONSIVE */
+@media(max-width:500px){
+  .team-name{max-width:65px;font-size:.8rem}
+  .flag{font-size:1.2rem}
+  .score-in{width:38px;height:32px;font-size:1rem}
+}
+
+/* CONNECTION STATUS */
+.conn-wrap{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted)}
+.conn-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+.conn-ok{background:#27ae60;box-shadow:0 0 6px #27ae60}
+.conn-err{background:#e74c3c;box-shadow:0 0 6px #e74c3c}
+.conn-none{background:#7f8c8d}
+.conn-checking{background:#f39c12;animation:pulse 1s infinite}
+
+/* CONFIG MODAL */
+.cfg-modal{max-width:540px;text-align:left}
+.cfg-modal h3{margin-bottom:6px}
+.cfg-modal p{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+.cfg-url-input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:6px;font-size:.82rem;font-family:monospace;margin-bottom:12px}
+.cfg-url-input:focus{outline:none;border-color:var(--accent)}
+.cfg-steps{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px}
+.cfg-steps summary{cursor:pointer;font-size:.83rem;font-weight:600;color:var(--accent);list-style:none;display:flex;align-items:center;gap:6px}
+.cfg-steps summary::before{content:'▶';font-size:.7rem}
+details[open] summary::before{content:'▼'}
+.cfg-steps ol{margin:10px 0 0 16px;font-size:.8rem;color:var(--muted);line-height:2}
+.cfg-steps ol li strong{color:var(--text)}
+.cfg-steps a{color:var(--accent)}
+.cfg-status{margin-top:8px;font-size:.8rem;min-height:18px;font-weight:600}
+.cfg-ok{color:#27ae60}.cfg-err{color:#e74c3c}.cfg-info{color:#f39c12}
+.cfg-code{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.72rem;font-family:monospace;color:#a8d8a8;overflow-x:auto;max-height:160px;overflow-y:auto;margin-top:8px;white-space:pre}
+
+/* ── PAGE LAYOUT (dos columnas) ── */
+.page-layout{display:flex;gap:16px;max-width:1420px;margin:0 auto;padding:0 16px;align-items:flex-start}
+.main-col{flex:1;min-width:0}
+.main-col .tabs-wrap{max-width:none;padding-left:0;padding-right:0}
+.main-col .tab-content{max-width:none;padding-left:0;padding-right:0}
+.main-col .lb-section{max-width:none;padding-left:0;padding-right:0}
+.main-col .admin-section{max-width:none;padding-left:0;padding-right:0}
+
+.sidebar-col{width:268px;flex-shrink:0;position:sticky;top:84px;max-height:calc(100vh - 104px);overflow-y:auto;scrollbar-width:thin}
+.sidebar-col::-webkit-scrollbar{width:4px}
+.sidebar-col::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+@media(max-width:960px){
+  .page-layout{flex-direction:column;padding:0}
+  .sidebar-col{width:100%;position:static;max-height:none;padding:0 16px}
+}
+
+/* ── TOP 10 PANEL ── */
+.top10-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.top10-head{background:linear-gradient(135deg,#1a1040 0%,#0a1a30 100%);padding:14px 16px;border-bottom:2px solid var(--accent);position:relative}
+.top10-head h3{font-size:.95rem;font-weight:800;color:var(--accent);letter-spacing:1px}
+.top10-head p{font-size:.72rem;color:var(--muted);margin-top:3px}
+.top10-refresh{position:absolute;top:13px;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:4px;line-height:1;transition:color .2s,transform .4s}
+.top10-refresh:hover{color:var(--accent);transform:rotate(180deg)}
+.top10-list{padding:4px 0}
+.top10-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);transition:background .15s;cursor:default}
+.top10-row:last-child{border-bottom:none}
+.top10-row:hover{background:var(--card2)}
+.top10-row.top10-me{background:rgba(232,185,35,.09)!important;border-left:3px solid var(--accent)}
+.top10-pos{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0;line-height:1}
+.top10-nick{flex:1;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.top10-nick .me-star{color:var(--accent);font-size:.7rem;margin-left:3px}
+.top10-pts{font-size:.95rem;font-weight:800;color:var(--accent);white-space:nowrap;text-align:right}
+.top10-pts small{display:block;font-size:.62rem;color:var(--muted);font-weight:400;text-align:right}
+.top10-empty{padding:24px 16px;text-align:center;color:var(--muted);font-size:.82rem;line-height:1.6}
+.top10-empty span{font-size:2rem;display:block;margin-bottom:6px}
+.top10-divider{margin:4px 14px;border:none;border-top:1px dashed var(--border)}
+.top10-me-row{padding:8px 14px;display:flex;align-items:center;gap:10px;background:rgba(232,185,35,.05);border-top:1px solid var(--border)}
+.top10-me-label{font-size:.72rem;color:var(--muted);flex:1}
+.top10-updated{padding:8px 14px;font-size:.67rem;color:var(--muted);text-align:right;border-top:1px solid var(--border);background:rgba(0,0,0,.2)}
+</style>
+</head>
+<body>
+
+<div id="testBanner">🧪 MODO PRUEBA ACTIVO — Todos los partidos desbloqueados para testing</div>
+
+<header>
+  <h1>⚽ POLLA MUNDIAL 2026</h1>
+  <p>USA 🇺🇸 &bull; México 🇲🇽 &bull; Canadá 🇨🇦 &bull; 11 Jun – 19 Jul 2026</p>
+  <div class="header-btns">
+    <button class="btn btn-outline btn-sm" onclick="toggleTestMode()">🧪 Modo Prueba</button>
+    <button class="btn btn-outline btn-sm" onclick="openAdmin()">⚙️ Admin</button>
+    <button class="btn btn-blue btn-sm" onclick="loadLeaderboard()">🏅 Actualizar Tabla</button>
+    <button class="btn btn-gold btn-sm" onclick="openConfig()">🔗 Configurar Sheets</button>
+  </div>
+  <div style="margin-top:8px;display:flex;justify-content:center">
+    <div class="conn-wrap" id="connWrap">
+      <span class="conn-dot conn-none" id="connDot"></span>
+      <span id="connLabel">Google Sheets: no configurado</span>
+    </div>
+  </div>
+</header>
+
+<!-- NICKNAME -->
+<div class="nick-section container">
+  <div class="nick-row">
+    <input type="text" id="nicknameInput" placeholder="Tu apodo / nickname" maxlength="30" oninput="onNickChange()">
+    <button class="btn btn-gold" onclick="loadMyPredictions()">📥 Cargar mis pronósticos</button>
+    <button class="btn btn-green" onclick="savePredictions()">💾 Guardar todo</button>
+  </div>
+  <div class="score-legend" style="margin-top:12px">
+    <span class="score-pill pill-gold">⭐ 5 pts — Marcador exacto</span>
+    <span class="score-pill pill-silver">✅ 2 pts — Resultado correcto (ganador/empate)</span>
+    <span class="score-pill pill-red">❌ 0 pts — Pronóstico incorrecto</span>
+  </div>
+  <div style="margin-top:8px;font-size:.78rem;color:var(--muted)">
+    🔒 Los partidos se bloquean automáticamente <strong>5 minutos antes</strong> de su inicio
+  </div>
+</div>
+
+<div class="page-layout">
+
+  <!-- ── COLUMNA PRINCIPAL ── -->
+  <div class="main-col">
+
+    <!-- TABS -->
+    <div class="tabs-wrap"><div class="tabs" id="mainTabs"></div></div>
+
+    <!-- TAB CONTENTS (generated by JS) -->
+    <div id="allTabContents"></div>
+
+    <!-- SAVE BAR -->
+    <div class="save-bar">
+      <span class="save-status" id="saveStatus">Ingresa tu apodo y completa tus pronósticos</span>
+      <button class="btn btn-green btn-sm" onclick="savePredictions()">💾 Guardar pronósticos</button>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="lb-section">
+      <div class="lb-header">
+        <h2>🏅 Tabla de Posiciones Completa</h2>
+        <button class="btn btn-blue btn-sm" onclick="loadLeaderboard()">↻ Actualizar</button>
+      </div>
+      <div id="leaderboard"><p style="color:var(--muted);font-size:.85rem">Presiona "Actualizar Tabla" para ver la clasificación.</p></div>
+    </div>
+
+    <!-- ADMIN SECTION -->
+    <div class="admin-section" id="adminSection">
+      <div class="admin-card">
+        <h3>⚙️ Panel de Administrador — Ingresar Resultados Reales</h3>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px">Ingresa el marcador final de cada partido para calcular puntos.</p>
+        <div id="adminMatchList"></div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-red btn-sm" onclick="saveAllResults()">💾 Guardar todos los resultados</button>
+          <button class="btn btn-outline btn-sm" onclick="closeAdmin()">✕ Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-col -->
+
+  <!-- ── SIDEBAR: TOP 10 ── -->
+  <div class="sidebar-col">
+    <div class="top10-panel">
+      <div class="top10-head">
+        <button class="top10-refresh" onclick="loadLeaderboard()" title="Actualizar clasificación">↻</button>
+        <h3>🏆 TOP 10</h3>
+        <p>Mejores puntajes acumulados</p>
+      </div>
+      <div id="top10List" class="top10-list">
+        <div class="top10-empty">
+          <span>🏅</span>
+          Presiona <strong>↻</strong> para cargar<br>la clasificación en vivo
+        </div>
+      </div>
+      <div class="top10-updated" id="top10Updated"></div>
+    </div>
+  </div><!-- /sidebar-col -->
+
+</div><!-- /page-layout -->
+
+<!-- CONFIG MODAL -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal cfg-modal">
+    <h3>🔗 Conectar con Google Sheets</h3>
+    <p>Pega la URL de tu Google Apps Script desplegado:</p>
+    <input type="url" class="cfg-url-input" id="cfgUrlInput"
+      placeholder="https://script.google.com/macros/s/.../exec">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn btn-gold btn-sm" onclick="saveConfig()">💾 Guardar URL</button>
+      <button class="btn btn-blue btn-sm" onclick="testConnection()">📡 Probar conexión</button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('configModal')">✕ Cerrar</button>
+    </div>
+    <div class="cfg-status" id="cfgStatus"></div>
+    <details class="cfg-steps">
+      <summary>📖 Cómo crear y desplegar el Apps Script (paso a paso)</summary>
+      <ol>
+        <li>Abre tu hoja: <a href="https://docs.google.com/spreadsheets/d/1ngp5a0u-_1GQGSVotQq93e1G95fKzJ9EHWwgqUIVp7U/edit" target="_blank">Google Sheets →</a></li>
+        <li>Ve a <strong>Extensiones → Apps Script</strong></li>
+        <li>Borra el código existente y pega el código de abajo</li>
+        <li>Clic en <strong>Implementar → Nueva implementación</strong></li>
+        <li>Tipo: <strong>Aplicación web</strong></li>
+        <li>Ejecutar como: <strong>Yo (tu cuenta Google)</strong></li>
+        <li>Quién tiene acceso: <strong>Cualquier persona</strong></li>
+        <li>Clic en <strong>Implementar</strong> → autoriza los permisos</li>
+        <li>Copia la URL <code>/exec</code> y pégala arriba</li>
+      </ol>
+      <div class="cfg-code" id="cfgCodeBlock">Cargando código…</div>
+    </details>
+  </div>
+</div>
+
+<!-- ADMIN AUTH MODAL -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <h3>🔐 Acceso Administrador</h3>
+    <p style="color:var(--muted);font-size:.85rem">Ingresa la contraseña para acceder al panel de resultados</p>
+    <input type="password" id="adminPassInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkAdminPass()">
+    <div style="display:flex;gap:8px;justify-content:center">
+      <button class="btn btn-gold" onclick="checkAdminPass()">Entrar</button>
+      <button class="btn btn-outline" onclick="closeModal('adminModal')">Cancelar</button>
+    </div>
+    <p id="adminPassError" style="color:#e74c3c;font-size:.8rem;margin-top:8px;display:none">Contraseña incorrecta</p>
+  </div>
+</div>
+
+<!-- SAVE SUCCESS MODAL -->
+<div class="modal-overlay" id="savedModal">
+  <div class="modal">
+    <div style="font-size:3rem">✅</div>
+    <h3>¡Pronósticos guardados!</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin:8px 0 16px">Tus predicciones fueron registradas exitosamente en Google Sheets.</p>
+    <button class="btn btn-gold" onclick="closeModal('savedModal')">OK</button>
+  </div>
+</div>
+
+<script>
+// ====================================================
+// CONFIGURACIÓN
+// ====================================================
+const ADMIN_PASSWORD = 'Mundial2026!';
+const SHEET_ID = '1ngp5a0u-_1GQGSVotQq93e1G95fKzJ9EHWwgqUIVp7U';
+
+// URL dinámica — se guarda en localStorage para no tocar el código
+let APPS_SCRIPT_URL = localStorage.getItem('wc2026_scriptUrl') || 'https://script.google.com/macros/s/AKfycbw54u4cgr19extYoG-PcTbx8cKaS9mLFXcpNItB2HjIz82wRWKuKJ2WOQCgLfl7VFbGnw/exec';
+
+let testMode = false;
+let predictions = {}; // { matchId: "homeScore-awayScore" }
+let results = {};     // { matchId: "homeScore-awayScore" }
+let isDirty = false;
+let currentNickname = '';
+
+// ── Helpers de conexión ──────────────────────────────
+function setConnStatus(state, msg) {
+  const dot = document.getElementById('connDot');
+  const lbl = document.getElementById('connLabel');
+  if (!dot) return;
+  dot.className = 'conn-dot conn-' + state;
+  lbl.textContent = 'Google Sheets: ' + msg;
+}
+
+/** POST seguro con mode:no-cors — evita CORS en cualquier dominio.
+ *  El request SÍ llega al Apps Script; la respuesta es opaca (no la leemos). */
+async function postToScript(payload) {
+  if (!APPS_SCRIPT_URL) throw new Error('URL del Apps Script no configurada');
+  await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',       // ← clave: bypasea CORS sin errores
+    body: JSON.stringify(payload)
+    // Sin Content-Type header → "simple request", sin preflight CORS
+  });
+  // Con no-cors la respuesta es opaca; asumimos éxito (el servidor recibe los datos)
+}
+
+/** GET con verificación de que la respuesta es JSON válido */
+async function getFromScript(params) {
+  if (!APPS_SCRIPT_URL) throw new Error('URL no configurada');
+  const url = APPS_SCRIPT_URL + '?' + new URLSearchParams(params) + '&t=' + Date.now();
+  const resp = await fetch(url, { redirect: 'follow' });
+  const text = await resp.text();
+  if (text.trimStart().startsWith('<')) {
+    throw new Error('El Apps Script devolvió HTML en lugar de JSON.\nVerifica que el despliegue sea correcto y que el acceso sea "Cualquier persona".');
+  }
+  return JSON.parse(text);
+}
+
+// ── Panel de configuración ───────────────────────────
+function openConfig() {
+  const inp = document.getElementById('cfgUrlInput');
+  if (inp) inp.value = APPS_SCRIPT_URL;
+  document.getElementById('cfgStatus').textContent = '';
+  // Inyectar el código del Apps Script en el bloque de ayuda
+  const codeEl = document.getElementById('cfgCodeBlock');
+  if (codeEl) codeEl.textContent = APPS_SCRIPT_SOURCE;
+  document.getElementById('configModal').classList.add('open');
+}
+
+function saveConfig() {
+  const url = document.getElementById('cfgUrlInput').value.trim();
+  if (!url.includes('script.google.com') && !url.includes('script.googleusercontent.com')) {
+    showCfgStatus('err', '⚠ La URL no parece válida. Debe ser de script.google.com');
+    return;
+  }
+  APPS_SCRIPT_URL = url;
+  localStorage.setItem('wc2026_scriptUrl', url);
+  showCfgStatus('ok', '✅ URL guardada correctamente');
+  setConnStatus('checking', 'verificando…');
+  setTimeout(() => testConnection(), 600);
+}
+
+async function testConnection() {
+  if (!APPS_SCRIPT_URL) { showCfgStatus('err', '⚠ Primero guarda la URL'); return; }
+  showCfgStatus('info', '⏳ Probando conexión…');
+  setConnStatus('checking', 'verificando…');
+  try {
+    const data = await getFromScript({ action: 'ping' });
+    showCfgStatus('ok', '✅ Conexión exitosa — Apps Script responde correctamente');
+    setConnStatus('ok', 'conectado ✓');
+  } catch(e) {
+    showCfgStatus('err', '❌ Error: ' + e.message);
+    setConnStatus('err', 'error de conexión');
+  }
+}
+
+function showCfgStatus(type, msg) {
+  const el = document.getElementById('cfgStatus');
+  if (!el) return;
+  el.className = 'cfg-status cfg-' + type;
+  el.textContent = msg;
+}
+
+async function checkInitialConn() {
+  if (!APPS_SCRIPT_URL) { setConnStatus('none', 'no configurado — presiona 🔗'); return; }
+  setConnStatus('checking', 'verificando…');
+  try {
+    await getFromScript({ action: 'ping' });
+    setConnStatus('ok', 'conectado ✓');
+  } catch(e) {
+    setConnStatus('err', 'sin conexión — revisa la URL');
+  }
+}
+
+// ====================================================
+// DATOS DE PARTIDOS
+// ====================================================
+const PHASES = [
+  { id:'md1', label:'Jornada 1', sub:'11–17 Jun' },
+  { id:'md2', label:'Jornada 2', sub:'18–23 Jun' },
+  { id:'md3', label:'Jornada 3', sub:'24–27 Jun' },
+  { id:'r32',  label:'Ronda de 32', sub:'28 Jun–3 Jul' },
+  { id:'r16',  label:'Octavos',     sub:'4–7 Jul' },
+  { id:'qf',   label:'Cuartos',     sub:'9–11 Jul' },
+  { id:'sf',   label:'Semis',       sub:'14–15 Jul' },
+  { id:'final',label:'Final',       sub:'18–19 Jul' },
+];
+
+const MATCHES = [
+  // ── GRUPO A: México · Corea del Sur · Sudáfrica · Play. UEFA-D ──
+  {id:'A1_1',phase:'md1',group:'A',home:'México',away:'Sudáfrica',hf:'🇲🇽',af:'🇿🇦',dt:'2026-06-11T18:00:00Z',venue:'Estadio Azteca, Cd. México'},
+  {id:'A1_2',phase:'md1',group:'A',home:'Corea del Sur',away:'Play. UEFA-D',hf:'🇰🇷',af:'🏳️',dt:'2026-06-12T01:00:00Z',venue:'Estadio Akron, Guadalajara'},
+  {id:'A2_1',phase:'md2',group:'A',home:'Play. UEFA-D',away:'Sudáfrica',hf:'🏳️',af:'🇿🇦',dt:'2026-06-18T16:00:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
+  {id:'A2_2',phase:'md2',group:'A',home:'México',away:'Corea del Sur',hf:'🇲🇽',af:'🇰🇷',dt:'2026-06-19T00:00:00Z',venue:'Estadio Akron, Guadalajara'},
+  {id:'A3_1',phase:'md3',group:'A',home:'Play. UEFA-D',away:'México',hf:'🏳️',af:'🇲🇽',dt:'2026-06-25T00:00:00Z',venue:'Estadio Azteca, Cd. México'},
+  {id:'A3_2',phase:'md3',group:'A',home:'Sudáfrica',away:'Corea del Sur',hf:'🇿🇦',af:'🇰🇷',dt:'2026-06-25T00:00:00Z',venue:'Estadio BBVA, Monterrey'},
+
+  // ── GRUPO B: Canadá · Suiza · Qatar · Play. UEFA-A ──
+  {id:'B1_1',phase:'md1',group:'B',home:'Canadá',away:'Play. UEFA-A',hf:'🇨🇦',af:'🏳️',dt:'2026-06-12T19:00:00Z',venue:'BMO Field, Toronto'},
+  {id:'B1_2',phase:'md1',group:'B',home:'Qatar',away:'Suiza',hf:'🇶🇦',af:'🇨🇭',dt:'2026-06-13T19:00:00Z',venue:"Levi's Stadium, San Francisco"},
+  {id:'B2_1',phase:'md2',group:'B',home:'Suiza',away:'Play. UEFA-A',hf:'🇨🇭',af:'🏳️',dt:'2026-06-18T19:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
+  {id:'B2_2',phase:'md2',group:'B',home:'Canadá',away:'Qatar',hf:'🇨🇦',af:'🇶🇦',dt:'2026-06-18T22:00:00Z',venue:'BC Place, Vancouver'},
+  {id:'B3_1',phase:'md3',group:'B',home:'Suiza',away:'Canadá',hf:'🇨🇭',af:'🇨🇦',dt:'2026-06-24T19:00:00Z',venue:'BC Place, Vancouver'},
+  {id:'B3_2',phase:'md3',group:'B',home:'Play. UEFA-A',away:'Qatar',hf:'🏳️',af:'🇶🇦',dt:'2026-06-24T19:00:00Z',venue:'Lumen Field, Seattle'},
+
+  // ── GRUPO C: Brasil · Marruecos · Haití · Escocia ──
+  {id:'C1_1',phase:'md1',group:'C',home:'Brasil',away:'Marruecos',hf:'🇧🇷',af:'🇲🇦',dt:'2026-06-13T22:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
+  {id:'C1_2',phase:'md1',group:'C',home:'Haití',away:'Escocia',hf:'🇭🇹',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',dt:'2026-06-14T01:00:00Z',venue:'Gillette Stadium, Boston'},
+  {id:'C2_1',phase:'md2',group:'C',home:'Escocia',away:'Marruecos',hf:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',af:'🇲🇦',dt:'2026-06-19T22:00:00Z',venue:'Gillette Stadium, Boston'},
+  {id:'C2_2',phase:'md2',group:'C',home:'Brasil',away:'Haití',hf:'🇧🇷',af:'🇭🇹',dt:'2026-06-20T01:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
+  {id:'C3_1',phase:'md3',group:'C',home:'Escocia',away:'Brasil',hf:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',af:'🇧🇷',dt:'2026-06-24T22:00:00Z',venue:'Hard Rock Stadium, Miami'},
+  {id:'C3_2',phase:'md3',group:'C',home:'Marruecos',away:'Haití',hf:'🇲🇦',af:'🇭🇹',dt:'2026-06-24T22:00:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
+
+  // ── GRUPO D: USA · Paraguay · Australia · Play. UEFA-C ──
+  {id:'D1_1',phase:'md1',group:'D',home:'USA',away:'Paraguay',hf:'🇺🇸',af:'🇵🇾',dt:'2026-06-13T01:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
+  {id:'D1_2',phase:'md1',group:'D',home:'Australia',away:'Play. UEFA-C',hf:'🇦🇺',af:'🏳️',dt:'2026-06-13T04:00:00Z',venue:'BC Place, Vancouver'},
+  {id:'D2_1',phase:'md2',group:'D',home:'USA',away:'Australia',hf:'🇺🇸',af:'🇦🇺',dt:'2026-06-19T19:00:00Z',venue:'Lumen Field, Seattle'},
+  {id:'D2_2',phase:'md2',group:'D',home:'Play. UEFA-C',away:'Paraguay',hf:'🏳️',af:'🇵🇾',dt:'2026-06-20T04:00:00Z',venue:"Levi's Stadium, San Francisco"},
+  {id:'D3_1',phase:'md3',group:'D',home:'Play. UEFA-C',away:'USA',hf:'🏳️',af:'🇺🇸',dt:'2026-06-26T02:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
+  {id:'D3_2',phase:'md3',group:'D',home:'Paraguay',away:'Australia',hf:'🇵🇾',af:'🇦🇺',dt:'2026-06-26T02:00:00Z',venue:"Levi's Stadium, San Francisco"},
+
+  // ── GRUPO E: Alemania · Curazao · Costa de Marfil · Ecuador ──
+  {id:'E1_1',phase:'md1',group:'E',home:'Alemania',away:'Curazao',hf:'🇩🇪',af:'🇨🇼',dt:'2026-06-14T17:00:00Z',venue:'NRG Stadium, Houston'},
+  {id:'E1_2',phase:'md1',group:'E',home:'Costa de Marfil',away:'Ecuador',hf:'🇨🇮',af:'🇪🇨',dt:'2026-06-14T23:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
+  {id:'E2_1',phase:'md2',group:'E',home:'Alemania',away:'Costa de Marfil',hf:'🇩🇪',af:'🇨🇮',dt:'2026-06-20T20:00:00Z',venue:'BMO Field, Toronto'},
+  {id:'E2_2',phase:'md2',group:'E',home:'Ecuador',away:'Curazao',hf:'🇪🇨',af:'🇨🇼',dt:'2026-06-21T00:00:00Z',venue:'Arrowhead Stadium, Kansas City'},
+  {id:'E3_1',phase:'md3',group:'E',home:'Curazao',away:'Costa de Marfil',hf:'🇨🇼',af:'🇨🇮',dt:'2026-06-25T20:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
+  {id:'E3_2',phase:'md3',group:'E',home:'Ecuador',away:'Alemania',hf:'🇪🇨',af:'🇩🇪',dt:'2026-06-25T20:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
+
+  // ── GRUPO F: Países Bajos · Japón · Túnez · Play. UEFA-B ──
+  {id:'F1_1',phase:'md1',group:'F',home:'Países Bajos',away:'Japón',hf:'🇳🇱',af:'🇯🇵',dt:'2026-06-14T19:00:00Z',venue:'AT&T Stadium, Dallas'},
+  {id:'F1_2',phase:'md1',group:'F',home:'Play. UEFA-B',away:'Túnez',hf:'🏳️',af:'🇹🇳',dt:'2026-06-15T01:00:00Z',venue:'Estadio BBVA, Monterrey'},
+  {id:'F2_1',phase:'md2',group:'F',home:'Países Bajos',away:'Play. UEFA-B',hf:'🇳🇱',af:'🏳️',dt:'2026-06-20T16:00:00Z',venue:'NRG Stadium, Houston'},
+  {id:'F2_2',phase:'md2',group:'F',home:'Túnez',away:'Japón',hf:'🇹🇳',af:'🇯🇵',dt:'2026-06-21T03:00:00Z',venue:'Estadio BBVA, Monterrey'},
+  {id:'F3_1',phase:'md3',group:'F',home:'Japón',away:'Play. UEFA-B',hf:'🇯🇵',af:'🏳️',dt:'2026-06-25T22:00:00Z',venue:'AT&T Stadium, Dallas'},
+  {id:'F3_2',phase:'md3',group:'F',home:'Túnez',away:'Países Bajos',hf:'🇹🇳',af:'🇳🇱',dt:'2026-06-25T22:00:00Z',venue:'Arrowhead Stadium, Kansas City'},
+
+  // ── GRUPO G: Bélgica · Egipto · Irán · Nueva Zelanda ──
+  {id:'G1_1',phase:'md1',group:'G',home:'Bélgica',away:'Egipto',hf:'🇧🇪',af:'🇪🇬',dt:'2026-06-15T19:00:00Z',venue:'Lumen Field, Seattle'},
+  {id:'G1_2',phase:'md1',group:'G',home:'Irán',away:'Nueva Zelanda',hf:'🇮🇷',af:'🇳🇿',dt:'2026-06-16T01:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
+  {id:'G2_1',phase:'md2',group:'G',home:'Bélgica',away:'Irán',hf:'🇧🇪',af:'🇮🇷',dt:'2026-06-21T19:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
+  {id:'G2_2',phase:'md2',group:'G',home:'Nueva Zelanda',away:'Egipto',hf:'🇳🇿',af:'🇪🇬',dt:'2026-06-22T01:00:00Z',venue:'BC Place, Vancouver'},
+  {id:'G3_1',phase:'md3',group:'G',home:'Egipto',away:'Irán',hf:'🇪🇬',af:'🇮🇷',dt:'2026-06-27T03:00:00Z',venue:'Lumen Field, Seattle'},
+  {id:'G3_2',phase:'md3',group:'G',home:'Nueva Zelanda',away:'Bélgica',hf:'🇳🇿',af:'🇧🇪',dt:'2026-06-27T03:00:00Z',venue:'BC Place, Vancouver'},
+
+  // ── GRUPO H: España · Uruguay · Arabia Saudita · Cabo Verde ──
+  {id:'H1_1',phase:'md1',group:'H',home:'España',away:'Cabo Verde',hf:'🇪🇸',af:'🇨🇻',dt:'2026-06-15T16:00:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
+  {id:'H1_2',phase:'md1',group:'H',home:'Arabia Saudita',away:'Uruguay',hf:'🇸🇦',af:'🇺🇾',dt:'2026-06-15T22:00:00Z',venue:'Hard Rock Stadium, Miami'},
+  {id:'H2_1',phase:'md2',group:'H',home:'España',away:'Arabia Saudita',hf:'🇪🇸',af:'🇸🇦',dt:'2026-06-21T16:00:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
+  {id:'H2_2',phase:'md2',group:'H',home:'Uruguay',away:'Cabo Verde',hf:'🇺🇾',af:'🇨🇻',dt:'2026-06-21T22:00:00Z',venue:'Hard Rock Stadium, Miami'},
+  {id:'H3_1',phase:'md3',group:'H',home:'Cabo Verde',away:'Arabia Saudita',hf:'🇨🇻',af:'🇸🇦',dt:'2026-06-26T00:00:00Z',venue:'NRG Stadium, Houston'},
+  {id:'H3_2',phase:'md3',group:'H',home:'Uruguay',away:'España',hf:'🇺🇾',af:'🇪🇸',dt:'2026-06-26T00:00:00Z',venue:'Estadio Akron, Guadalajara'},
+
+  // ── GRUPO I: Francia · Senegal · Noruega · Play. IC-2 ──
+  {id:'I1_1',phase:'md1',group:'I',home:'Francia',away:'Senegal',hf:'🇫🇷',af:'🇸🇳',dt:'2026-06-16T19:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
+  {id:'I1_2',phase:'md1',group:'I',home:'Play. IC-2',away:'Noruega',hf:'🏳️',af:'🇳🇴',dt:'2026-06-16T22:00:00Z',venue:'Gillette Stadium, Boston'},
+  {id:'I2_1',phase:'md2',group:'I',home:'Francia',away:'Play. IC-2',hf:'🇫🇷',af:'🏳️',dt:'2026-06-22T21:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
+  {id:'I2_2',phase:'md2',group:'I',home:'Noruega',away:'Senegal',hf:'🇳🇴',af:'🇸🇳',dt:'2026-06-23T00:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
+  {id:'I3_1',phase:'md3',group:'I',home:'Noruega',away:'Francia',hf:'🇳🇴',af:'🇫🇷',dt:'2026-06-26T19:00:00Z',venue:'Gillette Stadium, Boston'},
+  {id:'I3_2',phase:'md3',group:'I',home:'Senegal',away:'Play. IC-2',hf:'🇸🇳',af:'🏳️',dt:'2026-06-26T19:00:00Z',venue:'BMO Field, Toronto'},
+
+  // ── GRUPO J: Argentina · Argelia · Austria · Jordania ──
+  {id:'J1_1',phase:'md1',group:'J',home:'Argentina',away:'Argelia',hf:'🇦🇷',af:'🇩🇿',dt:'2026-06-17T00:00:00Z',venue:'Arrowhead Stadium, Kansas City'},
+  {id:'J1_2',phase:'md1',group:'J',home:'Austria',away:'Jordania',hf:'🇦🇹',af:'🇯🇴',dt:'2026-06-17T03:00:00Z',venue:"Levi's Stadium, San Francisco"},
+  {id:'J2_1',phase:'md2',group:'J',home:'Argentina',away:'Austria',hf:'🇦🇷',af:'🇦🇹',dt:'2026-06-22T16:00:00Z',venue:'AT&T Stadium, Dallas'},
+  {id:'J2_2',phase:'md2',group:'J',home:'Jordania',away:'Argelia',hf:'🇯🇴',af:'🇩🇿',dt:'2026-06-23T02:00:00Z',venue:"Levi's Stadium, San Francisco"},
+  {id:'J3_1',phase:'md3',group:'J',home:'Argelia',away:'Austria',hf:'🇩🇿',af:'🇦🇹',dt:'2026-06-28T01:00:00Z',venue:'Arrowhead Stadium, Kansas City'},
+  {id:'J3_2',phase:'md3',group:'J',home:'Jordania',away:'Argentina',hf:'🇯🇴',af:'🇦🇷',dt:'2026-06-28T01:00:00Z',venue:'AT&T Stadium, Dallas'},
+
+  // ── GRUPO K: Portugal · Colombia · Uzbekistán · Play. IC-1 ──
+  {id:'K1_1',phase:'md1',group:'K',home:'Portugal',away:'Play. IC-1',hf:'🇵🇹',af:'🏳️',dt:'2026-06-17T17:00:00Z',venue:'NRG Stadium, Houston'},
+  {id:'K1_2',phase:'md1',group:'K',home:'Uzbekistán',away:'Colombia',hf:'🇺🇿',af:'🇨🇴',dt:'2026-06-18T01:00:00Z',venue:'Estadio Azteca, Cd. México'},
+  {id:'K2_1',phase:'md2',group:'K',home:'Portugal',away:'Uzbekistán',hf:'🇵🇹',af:'🇺🇿',dt:'2026-06-23T17:00:00Z',venue:'NRG Stadium, Houston'},
+  {id:'K2_2',phase:'md2',group:'K',home:'Colombia',away:'Play. IC-1',hf:'🇨🇴',af:'🏳️',dt:'2026-06-24T01:00:00Z',venue:'Estadio Akron, Guadalajara'},
+  {id:'K3_1',phase:'md3',group:'K',home:'Colombia',away:'Portugal',hf:'🇨🇴',af:'🇵🇹',dt:'2026-06-27T23:30:00Z',venue:'Hard Rock Stadium, Miami'},
+  {id:'K3_2',phase:'md3',group:'K',home:'Play. IC-1',away:'Uzbekistán',hf:'🏳️',af:'🇺🇿',dt:'2026-06-27T23:30:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
+
+  // ── GRUPO L: Inglaterra · Croacia · Ghana · Panamá ──
+  {id:'L1_1',phase:'md1',group:'L',home:'Inglaterra',away:'Croacia',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇭🇷',dt:'2026-06-17T19:00:00Z',venue:'AT&T Stadium, Dallas'},
+  {id:'L1_2',phase:'md1',group:'L',home:'Ghana',away:'Panamá',hf:'🇬🇭',af:'🇵🇦',dt:'2026-06-17T23:00:00Z',venue:'BMO Field, Toronto'},
+  {id:'L2_1',phase:'md2',group:'L',home:'Inglaterra',away:'Ghana',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇬🇭',dt:'2026-06-23T20:00:00Z',venue:'Gillette Stadium, Boston'},
+  {id:'L2_2',phase:'md2',group:'L',home:'Panamá',away:'Croacia',hf:'🇵🇦',af:'🇭🇷',dt:'2026-06-23T23:00:00Z',venue:'BMO Field, Toronto'},
+  {id:'L3_1',phase:'md3',group:'L',home:'Panamá',away:'Inglaterra',hf:'🇵🇦',af:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',dt:'2026-06-27T21:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
+  {id:'L3_2',phase:'md3',group:'L',home:'Croacia',away:'Ghana',hf:'🇭🇷',af:'🇬🇭',dt:'2026-06-27T21:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
+
+  // ── RONDA DE 32 ──
+  {id:'R32_01',phase:'r32',rnd:'Ronda de 32 — Partido 1', home:'1º Grupo A',away:'3º Mejor',hf:'🏆',af:'🏆',dt:'2026-06-28T22:00:00Z',venue:'TBD'},
+  {id:'R32_02',phase:'r32',rnd:'Ronda de 32 — Partido 2', home:'1º Grupo C',away:'3º Mejor',hf:'🏆',af:'🏆',dt:'2026-06-29T02:00:00Z',venue:'TBD'},
+  {id:'R32_03',phase:'r32',rnd:'Ronda de 32 — Partido 3', home:'1º Grupo B',away:'2º Grupo D',hf:'🏆',af:'🏆',dt:'2026-06-29T19:00:00Z',venue:'TBD'},
+  {id:'R32_04',phase:'r32',rnd:'Ronda de 32 — Partido 4', home:'1º Grupo E',away:'2º Grupo F',hf:'🏆',af:'🏆',dt:'2026-06-29T23:00:00Z',venue:'TBD'},
+  {id:'R32_05',phase:'r32',rnd:'Ronda de 32 — Partido 5', home:'1º Grupo D',away:'2º Grupo C',hf:'🏆',af:'🏆',dt:'2026-06-30T19:00:00Z',venue:'TBD'},
+  {id:'R32_06',phase:'r32',rnd:'Ronda de 32 — Partido 6', home:'1º Grupo F',away:'2º Grupo E',hf:'🏆',af:'🏆',dt:'2026-06-30T23:00:00Z',venue:'TBD'},
+  {id:'R32_07',phase:'r32',rnd:'Ronda de 32 — Partido 7', home:'1º Grupo G',away:'2º Grupo H',hf:'🏆',af:'🏆',dt:'2026-07-01T19:00:00Z',venue:'TBD'},
+  {id:'R32_08',phase:'r32',rnd:'Ronda de 32 — Partido 8', home:'1º Grupo H',away:'2º Grupo G',hf:'🏆',af:'🏆',dt:'2026-07-01T23:00:00Z',venue:'TBD'},
+  {id:'R32_09',phase:'r32',rnd:'Ronda de 32 — Partido 9', home:'1º Grupo I',away:'2º Grupo J',hf:'🏆',af:'🏆',dt:'2026-07-02T19:00:00Z',venue:'TBD'},
+  {id:'R32_10',phase:'r32',rnd:'Ronda de 32 — Partido 10',home:'1º Grupo J',away:'2º Grupo I',hf:'🏆',af:'🏆',dt:'2026-07-02T23:00:00Z',venue:'TBD'},
+  {id:'R32_11',phase:'r32',rnd:'Ronda de 32 — Partido 11',home:'1º Grupo K',away:'2º Grupo L',hf:'🏆',af:'🏆',dt:'2026-07-03T19:00:00Z',venue:'TBD'},
+  {id:'R32_12',phase:'r32',rnd:'Ronda de 32 — Partido 12',home:'1º Grupo L',away:'2º Grupo K',hf:'🏆',af:'🏆',dt:'2026-07-03T23:00:00Z',venue:'TBD'},
+  {id:'R32_13',phase:'r32',rnd:'Ronda de 32 — Partido 13',home:'2º Grupo A',away:'3º Mejor',hf:'🏆',af:'🏆',dt:'2026-07-04T01:00:00Z',venue:'TBD'},
+  {id:'R32_14',phase:'r32',rnd:'Ronda de 32 — Partido 14',home:'2º Grupo B',away:'3º Mejor',hf:'🏆',af:'🏆',dt:'2026-07-04T03:00:00Z',venue:'TBD'},
+  {id:'R32_15',phase:'r32',rnd:'Ronda de 32 — Partido 15',home:'2º Grupo J',away:'3º Mejor',hf:'🏆',af:'🏆',dt:'2026-07-04T19:00:00Z',venue:'TBD'},
+  {id:'R32_16',phase:'r32',rnd:'Ronda de 32 — Partido 16',home:'2º Grupo L',away:'3º Mejor',hf:'🏆',af:'🏆',dt:'2026-07-04T23:00:00Z',venue:'TBD'},
+
+  // ── OCTAVOS DE FINAL ──
+  {id:'R16_1',phase:'r16',rnd:'Octavos — Partido 1',home:'G. R32-1',away:'G. R32-2',hf:'🏆',af:'🏆',dt:'2026-07-05T19:00:00Z',venue:'TBD'},
+  {id:'R16_2',phase:'r16',rnd:'Octavos — Partido 2',home:'G. R32-3',away:'G. R32-4',hf:'🏆',af:'🏆',dt:'2026-07-05T23:00:00Z',venue:'TBD'},
+  {id:'R16_3',phase:'r16',rnd:'Octavos — Partido 3',home:'G. R32-5',away:'G. R32-6',hf:'🏆',af:'🏆',dt:'2026-07-06T19:00:00Z',venue:'TBD'},
+  {id:'R16_4',phase:'r16',rnd:'Octavos — Partido 4',home:'G. R32-7',away:'G. R32-8',hf:'🏆',af:'🏆',dt:'2026-07-06T23:00:00Z',venue:'TBD'},
+  {id:'R16_5',phase:'r16',rnd:'Octavos — Partido 5',home:'G. R32-9',away:'G. R32-10',hf:'🏆',af:'🏆',dt:'2026-07-07T19:00:00Z',venue:'TBD'},
+  {id:'R16_6',phase:'r16',rnd:'Octavos — Partido 6',home:'G. R32-11',away:'G. R32-12',hf:'🏆',af:'🏆',dt:'2026-07-07T23:00:00Z',venue:'TBD'},
+  {id:'R16_7',phase:'r16',rnd:'Octavos — Partido 7',home:'G. R32-13',away:'G. R32-14',hf:'🏆',af:'🏆',dt:'2026-07-08T19:00:00Z',venue:'TBD'},
+  {id:'R16_8',phase:'r16',rnd:'Octavos — Partido 8',home:'G. R32-15',away:'G. R32-16',hf:'🏆',af:'🏆',dt:'2026-07-08T23:00:00Z',venue:'TBD'},
+
+  // ── CUARTOS DE FINAL ──
+  {id:'QF_1',phase:'qf',rnd:'Cuartos — Partido 1',home:'G. Oct-1',away:'G. Oct-2',hf:'🏆',af:'🏆',dt:'2026-07-09T23:00:00Z',venue:'TBD'},
+  {id:'QF_2',phase:'qf',rnd:'Cuartos — Partido 2',home:'G. Oct-3',away:'G. Oct-4',hf:'🏆',af:'🏆',dt:'2026-07-10T23:00:00Z',venue:'TBD'},
+  {id:'QF_3',phase:'qf',rnd:'Cuartos — Partido 3',home:'G. Oct-5',away:'G. Oct-6',hf:'🏆',af:'🏆',dt:'2026-07-11T19:00:00Z',venue:'TBD'},
+  {id:'QF_4',phase:'qf',rnd:'Cuartos — Partido 4',home:'G. Oct-7',away:'G. Oct-8',hf:'🏆',af:'🏆',dt:'2026-07-11T23:00:00Z',venue:'TBD'},
+
+  // ── SEMIFINALES ──
+  {id:'SF_1',phase:'sf',rnd:'Semifinal 1',home:'G. CF-1',away:'G. CF-2',hf:'🏆',af:'🏆',dt:'2026-07-14T23:00:00Z',venue:'TBD'},
+  {id:'SF_2',phase:'sf',rnd:'Semifinal 2',home:'G. CF-3',away:'G. CF-4',hf:'🏆',af:'🏆',dt:'2026-07-15T23:00:00Z',venue:'TBD'},
+
+  // ── TERCER PUESTO + FINAL ──
+  {id:'3RD',  phase:'final',rnd:'Tercer y Cuarto Puesto',home:'Perdedor SF-1',away:'Perdedor SF-2',hf:'🥉',af:'🥉',dt:'2026-07-18T23:00:00Z',venue:'TBD'},
+  {id:'FINAL',phase:'final',rnd:'GRAN FINAL 🏆',         home:'Ganador SF-1', away:'Ganador SF-2', hf:'🏆',af:'🏆',dt:'2026-07-19T19:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
+];
+
+// ====================================================
+// INICIALIZAR INTERFAZ
+// ====================================================
+function init() {
+  buildTabs();
+  buildTabContents();
+  buildAdminPanel();
+  loadFromLocalStorage();
+  startClockTick();
+  // Cargar resultados guardados localmente (admin)
+  const savedRes = localStorage.getItem('wc2026_results');
+  if (savedRes) { try { results = JSON.parse(savedRes); } catch(e){} }
+  refreshAllCards();
+}
+
+function buildTabs() {
+  const container = document.getElementById('mainTabs');
+  PHASES.forEach((p, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (i===0?' active':'');
+    btn.dataset.phase = p.id;
+    btn.innerHTML = `${p.label}<br><small style="color:var(--muted);font-weight:400">${p.sub}</small>`;
+    btn.onclick = () => switchTab(p.id);
+    container.appendChild(btn);
+  });
+}
+
+function buildTabContents() {
+  const wrap = document.getElementById('allTabContents');
+  PHASES.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'tab-content container' + (i===0?' active':'');
+    div.id = 'tab_' + p.id;
+    div.innerHTML = buildPhaseHTML(p.id);
+    wrap.appendChild(div);
+  });
+}
+
+function buildPhaseHTML(phaseId) {
+  const phaseMatches = MATCHES.filter(m => m.phase === phaseId);
+  if (!phaseMatches.length) return '<p style="color:var(--muted)">Sin partidos en esta fase.</p>';
+
+  const isGroup = ['md1','md2','md3'].includes(phaseId);
+
+  if (isGroup) {
+    // Group by group letter
+    const groups = {};
+    phaseMatches.forEach(m => {
+      if (!groups[m.group]) groups[m.group] = [];
+      groups[m.group].push(m);
+    });
+    let html = '';
+    Object.keys(groups).sort().forEach(g => {
+      const teamNames = [...new Set(groups[g].flatMap(m => [m.home, m.away]))].filter(t=>!t.startsWith('Play.')).join(' · ');
+      html += `<div class="group-block">
+        <div class="group-title">Grupo ${g} &mdash; ${teamNames}</div>
+        <div class="match-grid">${groups[g].map(m=>buildMatchCard(m)).join('')}</div>
+      </div>`;
+    });
+    return html;
+  } else {
+    return `<div class="match-grid">${phaseMatches.map(m=>buildMatchCard(m)).join('')}</div>`;
+  }
+}
+
+function buildMatchCard(m) {
+  const dt = new Date(m.dt);
+  const localTime = dt.toLocaleString('es-CO', {weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true,timeZoneName:'short'});
+  const utcTime = dt.toISOString().replace('T',' ').substring(0,16) + ' UTC';
+  const label = m.rnd || ('Grupo ' + m.group);
+  return `<div class="match-card" id="card_${m.id}" data-dt="${m.dt}">
+    <div class="match-meta">
+      <span class="venue" title="${m.venue}">📍 ${m.venue}</span>
+      <span class="match-time-badge time-ok" id="badge_${m.id}" title="${utcTime}">${localTime}</span>
+    </div>
+    <div class="teams-row">
+      <div class="team">
+        <span class="flag">${m.hf}</span>
+        <span class="team-name">${m.home}</span>
+      </div>
+      <div class="score-inputs">
+        <input type="number" class="score-in" id="h_${m.id}" min="0" max="99" placeholder="–"
+          oninput="onPredictionChange('${m.id}')" onfocus="selectAll(this)">
+        <span class="score-sep">:</span>
+        <input type="number" class="score-in" id="a_${m.id}" min="0" max="99" placeholder="–"
+          oninput="onPredictionChange('${m.id}')" onfocus="selectAll(this)">
+      </div>
+      <div class="team away">
+        <span class="flag">${m.af}</span>
+        <span class="team-name">${m.away}</span>
+      </div>
+    </div>
+    <div class="result-row" id="res_${m.id}">
+      <span class="result-badge res-pending">— Sin resultado —</span>
+    </div>
+  </div>`;
+}
+
+function selectAll(el) { setTimeout(() => el.select(), 50); }
+
+// ====================================================
+// TIME LOCKING
+// ====================================================
+function isLocked(match) {
+  if (testMode) return false;
+  const matchTime = new Date(match.dt).getTime();
+  return Date.now() >= matchTime - 5 * 60 * 1000;
+}
+
+function getTimeBadgeInfo(match) {
+  if (testMode) return {cls:'time-ok', label:'🧪 Prueba'};
+  const now = Date.now();
+  const mt = new Date(match.dt).getTime();
+  const diff = mt - now;
+  if (diff < 0) return {cls:'time-locked', label:'Finalizado / En curso'};
+  if (diff < 30 * 60 * 1000) return {cls:'time-soon', label:`⏰ ${Math.ceil(diff/60000)} min`};
+  const dt = new Date(match.dt);
+  const local = dt.toLocaleString('es-CO',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true});
+  return {cls:'time-ok', label:local};
+}
+
+function startClockTick() {
+  setInterval(refreshAllCards, 30000); // refresh every 30s
+}
+
+function refreshAllCards() {
+  MATCHES.forEach(m => updateCard(m));
+}
+
+function updateCard(m) {
+  const card = document.getElementById('card_' + m.id);
+  if (!card) return;
+  const locked = isLocked(m);
+  const hIn = document.getElementById('h_' + m.id);
+  const aIn = document.getElementById('a_' + m.id);
+  const badge = document.getElementById('badge_' + m.id);
+
+  if (locked) {
+    card.classList.add('locked');
+    if (hIn) { hIn.disabled = true; aIn.disabled = true; }
+  } else {
+    card.classList.remove('locked');
+    if (hIn) { hIn.disabled = false; aIn.disabled = false; }
+  }
+
+  if (badge) {
+    const info = getTimeBadgeInfo(m);
+    badge.className = 'match-time-badge ' + info.cls;
+    badge.textContent = info.label;
+  }
+
+  // Show result if available
+  const resDiv = document.getElementById('res_' + m.id);
+  if (resDiv && results[m.id]) {
+    const [rh, ra] = results[m.id].split('-').map(Number);
+    const pred = predictions[m.id];
+    let pts = 0, cls = 'res-pending', label = `Resultado: ${rh}–${ra}`;
+    if (pred) {
+      pts = calcPoints(pred, results[m.id]);
+      if (pts === 5) { cls='res-correct5'; label=`✨ ¡Exacto! ${rh}–${ra} · +5 pts`; card.classList.add('correct5'); }
+      else if (pts === 2) { cls='res-correct2'; label=`✅ Resultado: ${rh}–${ra} · +2 pts`; card.classList.add('correct2'); }
+      else { cls='res-wrong'; label=`❌ Resultado: ${rh}–${ra} · 0 pts`; }
+    } else {
+      label = `Resultado: ${rh}–${ra}`;
+    }
+    resDiv.innerHTML = `<span class="result-badge ${cls}">${label}</span>`;
+  }
+}
+
+// ====================================================
+// PREDICTIONS
+// ====================================================
+function onPredictionChange(matchId) {
+  const h = document.getElementById('h_' + matchId);
+  const a = document.getElementById('a_' + matchId);
+  const hv = h.value.trim();
+  const av = a.value.trim();
+  if (hv !== '' && av !== '') {
+    predictions[matchId] = hv + '-' + av;
+  } else {
+    delete predictions[matchId];
+  }
+  setDirty(true);
+  updateCard(MATCHES.find(m => m.id === matchId));
+}
+
+function onNickChange() {
+  currentNickname = document.getElementById('nicknameInput').value.trim();
+  setDirty(true);
+}
+
+function setDirty(v) {
+  isDirty = v;
+  const s = document.getElementById('saveStatus');
+  if (v) { s.className='save-status unsaved'; s.textContent='⚠ Cambios sin guardar'; }
+  else  { s.className='save-status saved'; s.textContent='✅ Guardado'; }
+}
+
+function loadFromLocalStorage() {
+  const saved = localStorage.getItem('wc2026_predictions');
+  if (!saved) return;
+  try {
+    const data = JSON.parse(saved);
+    currentNickname = data.nickname || '';
+    predictions = data.predictions || {};
+    document.getElementById('nicknameInput').value = currentNickname;
+    applyPredictionsToInputs();
+  } catch(e) {}
+}
+
+function applyPredictionsToInputs() {
+  Object.keys(predictions).forEach(mid => {
+    const parts = predictions[mid].split('-');
+    const hIn = document.getElementById('h_' + mid);
+    const aIn = document.getElementById('a_' + mid);
+    if (hIn) { hIn.value = parts[0]; aIn.value = parts[1]; }
+  });
+}
+
+// ====================================================
+// SAVE / LOAD
+// ====================================================
+async function savePredictions() {
+  const nick = document.getElementById('nicknameInput').value.trim();
+  if (!nick) { alert('Por favor ingresa tu apodo antes de guardar.'); return; }
+  currentNickname = nick;
+
+  // Save to localStorage always
+  localStorage.setItem('wc2026_predictions', JSON.stringify({ nickname: nick, predictions, ts: Date.now() }));
+
+  // Try to save to Google Sheets
+  const statusEl = document.getElementById('saveStatus');
+
+  if (!APPS_SCRIPT_URL) {
+    setDirty(false);
+    alert('✅ Guardado localmente.\n\n⚠ No has configurado la URL del Apps Script.\nPresiona el botón 🔗 Configurar Sheets en el encabezado.');
+    return;
+  }
+
+  statusEl.textContent = '⏳ Guardando en Google Sheets...';
+  statusEl.className = 'save-status';
+
+  try {
+    // mode: no-cors → el request llega al servidor sin errores CORS,
+    // aunque la respuesta sea opaca (no la podemos leer). Es correcto para escritura.
+    await postToScript({ action: 'savePredictions', nickname: nick, predictions });
+    setDirty(false);
+    setConnStatus('ok', 'conectado ✓');
+    document.getElementById('savedModal').classList.add('open');
+  } catch(e) {
+    console.warn('No se pudo guardar en Sheets:', e);
+    setDirty(false);
+    if (e.message.includes('no configurada')) {
+      alert('⚠ Configura primero la URL del Apps Script (botón 🔗 en el encabezado).');
+    } else {
+      setConnStatus('err', 'error al guardar');
+      alert('✅ Guardado localmente.\n⚠ Error al sincronizar con Google Sheets:\n' + e.message);
+    }
+  }
+}
+
+async function loadMyPredictions() {
+  const nick = document.getElementById('nicknameInput').value.trim();
+  if (!nick) { alert('Ingresa tu apodo primero.'); return; }
+
+  const statusEl = document.getElementById('saveStatus');
+  statusEl.textContent = '⏳ Cargando pronósticos...';
+  statusEl.className = 'save-status';
+
+  try {
+    const data = await getFromScript({ action: 'getPredictions', nickname: nick });
+
+    if (data.predictions) {
+      predictions = data.predictions;
+      applyPredictionsToInputs();
+      if (data.results) { results = Object.assign(results, data.results); }
+      refreshAllCards();
+      statusEl.textContent = '✅ Pronósticos cargados desde Google Sheets';
+      statusEl.className = 'save-status saved';
+      setConnStatus('ok', 'conectado ✓');
+    } else {
+      statusEl.textContent = 'Apodo no encontrado en Sheets — mostrando datos locales';
+      statusEl.className = 'save-status';
+      loadFromLocalStorage();
+    }
+  } catch(e) {
+    loadFromLocalStorage();
+    statusEl.textContent = '⚠ Sin conexión a Sheets — cargado desde local';
+    statusEl.className = 'save-status unsaved';
+    setConnStatus('err', 'sin conexión');
+    console.warn('loadMyPredictions error:', e.message);
+  }
+}
+
+async function loadLeaderboard() {
+  const lb = document.getElementById('leaderboard');
+  lb.innerHTML = '<p style="color:var(--muted)">⏳ Cargando clasificación…</p>';
+  setConnStatus('checking', 'cargando…');
+
+  try {
+    const data = await getFromScript({ action: 'getLeaderboard' });
+
+    results = Object.assign(results, data.results || {});
+    localStorage.setItem('wc2026_results', JSON.stringify(results));
+    refreshAllCards();
+    renderLeaderboard(data.leaderboard || []);
+    setConnStatus('ok', 'conectado ✓');
+  } catch(e) {
+    console.warn('loadLeaderboard error:', e.message);
+    // Fallback to localStorage
+    const localRes = localStorage.getItem('wc2026_results');
+    if (localRes) { try { results = JSON.parse(localRes); refreshAllCards(); } catch(e2){} }
+
+    const noUrl = !APPS_SCRIPT_URL;
+    const errMsg = noUrl
+      ? '⚠ Apps Script no configurado. Presiona <strong>🔗 Configurar Sheets</strong> en el encabezado.'
+      : '⚠ No se pudo conectar a Google Sheets. Revisa la URL en <strong>🔗 Configurar Sheets</strong>.<br><small style="color:#e74c3c">' + e.message + '</small>';
+
+    lb.innerHTML = `<div style="background:rgba(192,57,43,.1);border:1px solid #c0392b;border-radius:8px;padding:14px;font-size:.85rem;margin-bottom:12px">${errMsg}</div>` + buildLocalLeaderboardHTML();
+    renderSidebarTop10Local();
+    setConnStatus(noUrl ? 'none' : 'err', noUrl ? 'no configurado' : 'sin conexión');
+  }
+}
+
+function buildLocalLeaderboardHTML() {
+  if (!currentNickname || !Object.keys(predictions).length) return '';
+  const pts = Object.keys(predictions).reduce((acc, mid) => {
+    return acc + (results[mid] ? calcPoints(predictions[mid], results[mid]) : 0);
+  }, 0);
+  return `<table class="lb-table"><thead><tr><th>Pos</th><th>Apodo</th><th>Puntos</th></tr></thead>
+    <tbody><tr class="me"><td><span class="pos-badge pos-1">1</span></td><td>${currentNickname} (tú)</td><td><strong>${pts}</strong></td></tr></tbody></table>`;
+}
+
+function renderLeaderboard(entries) {
+  const lb = document.getElementById('leaderboard');
+  if (!entries.length) { lb.innerHTML = '<p style="color:var(--muted)">Sin participantes registrados aún.</p>'; renderSidebarTop10([]); return; }
+
+  const sorted = entries.sort((a,b) => b.points - a.points);
+  let html = `<table class="lb-table"><thead><tr>
+    <th>Pos</th><th>Apodo</th><th>Puntos</th><th>Exactos ⭐</th><th>Correctos ✅</th><th>Jugados</th>
+  </tr></thead><tbody>`;
+
+  sorted.forEach((e, i) => {
+    const posClass = i===0?'pos-1':i===1?'pos-2':i===2?'pos-3':'pos-n';
+    const isMe = e.nickname === currentNickname;
+    html += `<tr${isMe?' class="me"':''}>
+      <td><span class="pos-badge ${posClass}">${i+1}</span></td>
+      <td>${e.nickname}${isMe?' <strong>(tú)</strong>':''}</td>
+      <td><strong>${e.points}</strong></td>
+      <td>${e.exact || 0}</td>
+      <td>${e.correct || 0}</td>
+      <td>${e.played || 0}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  lb.innerHTML = html;
+  renderSidebarTop10(sorted);
+}
+
+// ====================================================
+// SIDEBAR TOP 10
+// ====================================================
+function renderSidebarTop10(entries) {
+  const list = document.getElementById('top10List');
+  const updEl = document.getElementById('top10Updated');
+  if (!list) return;
+
+  if (!entries || !entries.length) {
+    list.innerHTML = '<div class="top10-empty"><span>🏅</span>Sin participantes aún.<br>¡Sé el primero en registrarte!</div>';
+    if (updEl) updEl.textContent = '';
+    return;
+  }
+
+  const top10 = entries.slice(0, 10);
+  const medals = ['🥇','🥈','🥉'];
+  const posClasses = ['pos-1','pos-2','pos-3'];
+
+  // Find current user's position (may be outside top 10)
+  let myPos = -1;
+  let myEntry = null;
+  if (currentNickname) {
+    myPos = entries.findIndex(e => e.nickname === currentNickname);
+    if (myPos >= 0) myEntry = entries[myPos];
+  }
+
+  let html = '';
+  top10.forEach((e, i) => {
+    const isMe = e.nickname === currentNickname;
+    const posClass = posClasses[i] || 'pos-n';
+    const posLabel = i < 3 ? medals[i] : (i + 1);
+    html += `<div class="top10-row${isMe ? ' top10-me' : ''}">
+      <div class="top10-pos ${posClass}">${posLabel}</div>
+      <div class="top10-nick" title="${e.nickname}">${e.nickname}${isMe ? '<span class="me-star">★</span>' : ''}</div>
+      <div class="top10-pts">${e.points}<small>pts</small></div>
+    </div>`;
+  });
+
+  // If current user is outside top 10, show separator + their row
+  if (myPos > 9 && myEntry) {
+    html += `<hr class="top10-divider">
+    <div class="top10-me-row">
+      <div class="top10-pos pos-n">${myPos + 1}</div>
+      <div class="top10-nick">${myEntry.nickname}<span class="me-star">★ tú</span></div>
+      <div class="top10-pts">${myEntry.points}<small>pts</small></div>
+    </div>`;
+  }
+
+  list.innerHTML = html;
+  if (updEl) {
+    const now = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+    updEl.textContent = `↻ Actualizado: ${now}`;
+  }
+}
+
+function renderSidebarTop10Local() {
+  if (!currentNickname || !Object.keys(predictions).length) return;
+  const pts = Object.keys(predictions).reduce((acc, mid) =>
+    acc + (results[mid] ? calcPoints(predictions[mid], results[mid]) : 0), 0);
+  renderSidebarTop10([{ nickname: currentNickname, points: pts }]);
+}
+
+// ====================================================
+// SCORING
+// ====================================================
+function calcPoints(pred, actual) {
+  if (!pred || !actual) return 0;
+  const [ph, pa] = pred.split('-').map(Number);
+  const [rh, ra] = actual.split('-').map(Number);
+  if (isNaN(ph)||isNaN(pa)||isNaN(rh)||isNaN(ra)) return 0;
+  if (ph===rh && pa===ra) return 5;
+  const predOut = ph>pa?'H':ph<pa?'A':'D';
+  const realOut = rh>ra?'H':rh<ra?'A':'D';
+  if (predOut===realOut) return 2;
+  return 0;
+}
+
+// ====================================================
+// ADMIN PANEL
+// ====================================================
+function buildAdminPanel() {
+  const list = document.getElementById('adminMatchList');
+  let html = '';
+  MATCHES.forEach(m => {
+    const label = m.rnd || `Grupo ${m.group}: ${m.home} vs ${m.away}`;
+    html += `<div class="admin-match-row">
+      <span class="admin-match-name">${m.hf} ${m.home} vs ${m.away} ${m.af}</span>
+      <input type="number" class="res-input" id="rh_${m.id}" min="0" max="99" placeholder="–" title="Goles local">
+      <span style="color:var(--muted);font-weight:700">:</span>
+      <input type="number" class="res-input" id="ra_${m.id}" min="0" max="99" placeholder="–" title="Goles visitante">
+      <button class="btn-save-res" onclick="saveOneResult('${m.id}')">✓ Guardar</button>
+      <span id="res_saved_${m.id}" class="res-saved-badge" style="display:none">✅</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+  // Pre-fill with existing results
+  Object.keys(results).forEach(mid => {
+    const parts = results[mid].split('-');
+    const rhEl = document.getElementById('rh_' + mid);
+    const raEl = document.getElementById('ra_' + mid);
+    if (rhEl) { rhEl.value = parts[0]; raEl.value = parts[1]; }
+  });
+}
+
+function saveOneResult(matchId) {
+  const rh = document.getElementById('rh_' + matchId);
+  const ra = document.getElementById('ra_' + matchId);
+  if (!rh || rh.value==='' || ra.value==='') return;
+  results[matchId] = rh.value + '-' + ra.value;
+  localStorage.setItem('wc2026_results', JSON.stringify(results));
+  const badge = document.getElementById('res_saved_' + matchId);
+  if (badge) { badge.style.display='inline'; setTimeout(()=>badge.style.display='none', 2000); }
+  refreshAllCards();
+  renderSidebarTop10Local();
+}
+
+async function saveAllResults() {
+  // Save all admin result inputs
+  MATCHES.forEach(m => {
+    const rh = document.getElementById('rh_' + m.id);
+    const ra = document.getElementById('ra_' + m.id);
+    if (rh && rh.value !== '' && ra.value !== '') {
+      results[m.id] = rh.value + '-' + ra.value;
+    }
+  });
+  localStorage.setItem('wc2026_results', JSON.stringify(results));
+  refreshAllCards();
+  renderSidebarTop10Local();
+
+  // Try push to Sheets (no-cors: el request llega aunque la respuesta sea opaca)
+  try {
+    await postToScript({ action: 'saveResults', results });
+    alert('✅ Resultados guardados y sincronizados con Google Sheets.');
+    setConnStatus('ok', 'conectado ✓');
+  } catch(e) {
+    const msg = e.message.includes('no configurada')
+      ? '⚠ Configura primero la URL del Apps Script (botón 🔗).'
+      : '✅ Resultados guardados localmente.\n⚠ No se pudo sincronizar: ' + e.message;
+    alert(msg);
+  }
+}
+
+function openAdmin() {
+  document.getElementById('adminPassInput').value = '';
+  document.getElementById('adminPassError').style.display = 'none';
+  document.getElementById('adminModal').classList.add('open');
+}
+
+function checkAdminPass() {
+  const p = document.getElementById('adminPassInput').value;
+  if (p === ADMIN_PASSWORD) {
+    closeModal('adminModal');
+    document.getElementById('adminSection').classList.add('open');
+    document.getElementById('adminSection').scrollIntoView({behavior:'smooth'});
+  } else {
+    document.getElementById('adminPassError').style.display = 'block';
+  }
+}
+
+function closeAdmin() {
+  document.getElementById('adminSection').classList.remove('open');
+}
+
+// ====================================================
+// TEST MODE
+// ====================================================
+function toggleTestMode() {
+  testMode = !testMode;
+  const banner = document.getElementById('testBanner');
+  if (testMode) { banner.classList.add('active'); }
+  else { banner.classList.remove('active'); }
+  refreshAllCards();
+}
+
+// ====================================================
+// TAB NAVIGATION
+// ====================================================
+function switchTab(phaseId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.phase===phaseId));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id==='tab_'+phaseId));
+}
+
+// ====================================================
+// UTILS
+// ====================================================
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ====================================================
+// APPS SCRIPT SOURCE (se muestra en el panel de configuración)
+// ====================================================
+const APPS_SCRIPT_SOURCE = `const SHEET_ID = '1ngp5a0u-_1GQGSVotQq93e1G95fKzJ9EHWwgqUIVp7U';
+
+function doPost(e) {
+  try {
+    const raw = e.postData ? e.postData.contents : '';
+    const data = JSON.parse(raw);
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    if (data.action === 'savePredictions') {
+      let sh = ss.getSheetByName('Predicciones') ||
+               (() => { const s=ss.insertSheet('Predicciones'); s.appendRow(['Timestamp','Apodo','JSON']); return s; })();
+      const v = sh.getDataRange().getValues();
+      let row = -1;
+      for (let i=1;i<v.length;i++) if(v[i][1]===data.nickname){row=i+1;break;}
+      const rd = [new Date(), data.nickname, JSON.stringify(data.predictions)];
+      if (row===-1) sh.appendRow(rd); else sh.getRange(row,1,1,3).setValues([rd]);
+    }
+    if (data.action === 'saveResults') {
+      let sh = ss.getSheetByName('Resultados') ||
+               (() => { const s=ss.insertSheet('Resultados'); s.appendRow(['MatchID','Resultado']); return s; })();
+      sh.clearContents(); sh.appendRow(['MatchID','Resultado']);
+      Object.keys(data.results).forEach(id => sh.appendRow([id, data.results[id]]));
+    }
+    return out({success:true});
+  } catch(err) { return out({error:err.message}); }
+}
+
+function doGet(e) {
+  try {
+    const ss  = SpreadsheetApp.openById(SHEET_ID);
+    const act = (e.parameter||{}).action || 'getLeaderboard';
+    if (act === 'ping') return out({pong:true});
+
+    // Cargar resultados
+    const results = {};
+    const rs = ss.getSheetByName('Resultados');
+    if (rs) { const rv=rs.getDataRange().getValues(); for(let i=1;i<rv.length;i++) if(rv[i][0]) results[rv[i][0]]=rv[i][1]; }
+
+    if (act === 'getPredictions') {
+      const nick = (e.parameter||{}).nickname || '';
+      const ps = ss.getSheetByName('Predicciones');
+      if (ps) { const pv=ps.getDataRange().getValues(); for(let i=1;i<pv.length;i++) if(pv[i][1]===nick) return out({predictions:JSON.parse(pv[i][2]||'{}'),results}); }
+      return out({predictions:null, results});
+    }
+
+    // Leaderboard
+    const leaderboard = [];
+    const ps = ss.getSheetByName('Predicciones');
+    if (ps) {
+      const pv = ps.getDataRange().getValues();
+      for (let i=1;i<pv.length;i++) {
+        if (!pv[i][1]) continue;
+        const preds = JSON.parse(pv[i][2]||'{}');
+        let pts=0,exact=0,correct=0,played=0;
+        Object.keys(preds).forEach(mid => {
+          if(results[mid]){played++; const p=calcPts(preds[mid],results[mid]); pts+=p; if(p===5)exact++; else if(p===2)correct++;}
+        });
+        leaderboard.push({nickname:pv[i][1],points:pts,exact,correct,played});
+      }
+    }
+    return out({leaderboard, results});
+  } catch(err) { return out({error:err.message}); }
+}
+
+function calcPts(pred,actual){
+  const [ph,pa]=pred.split('-').map(Number);
+  const [rh,ra]=actual.split('-').map(Number);
+  if(ph===rh&&pa===ra) return 5;
+  const po=ph>pa?'H':ph<pa?'A':'D', ro=rh>ra?'H':rh<ra?'A':'D';
+  return po===ro?2:0;
+}
+function out(obj){ return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }`;
+
+// ====================================================
+// BOOT
+// ====================================================
+document.addEventListener('DOMContentLoaded', () => { init(); checkInitialConn(); });
+</script>
+
+<!-- El código del Apps Script y las instrucciones están disponibles
+     directamente en la página: botón 🔗 Configurar Sheets → panel de configuración -->
+</body>
+</html>

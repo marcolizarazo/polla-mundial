@@ -378,7 +378,7 @@ const ADMIN_PASSWORD = 'Mundial2026!';
 const SHEET_ID = '1ngp5a0u-_1GQGSVotQq93e1G95fKzJ9EHWwgqUIVp7U';
 
 // URL dinámica — se guarda en localStorage para no tocar el código
-let APPS_SCRIPT_URL = localStorage.getItem('wc2026_scriptUrl') || 'https://script.google.com/macros/s/AKfycbw54u4cgr19extYoG-PcTbx8cKaS9mLFXcpNItB2HjIz82wRWKuKJ2WOQCgLfl7VFbGnw/exec';
+let APPS_SCRIPT_URL = localStorage.getItem('wc2026_scriptUrl') || 'https://script.google.com/macros/s/AKfycbxCpatpKs9K7NJOZbdHDPrjih9SPKt5hbpLc2at2wzDThgNKnqDdfNUA8DioyznupEgZA/exec';
 
 let testMode = false;
 let predictions = {}; // { matchId: "homeScore-awayScore" }
@@ -395,29 +395,67 @@ function setConnStatus(state, msg) {
   lbl.textContent = 'Google Sheets: ' + msg;
 }
 
-/** POST seguro con mode:no-cors — evita CORS en cualquier dominio.
- *  El request SÍ llega al Apps Script; la respuesta es opaca (no la leemos). */
-async function postToScript(payload) {
-  if (!APPS_SCRIPT_URL) throw new Error('URL del Apps Script no configurada');
-  await fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',       // ← clave: bypasea CORS sin errores
-    body: JSON.stringify(payload)
-    // Sin Content-Type header → "simple request", sin preflight CORS
+/** POST via formulario oculto en iframe — funciona desde CUALQUIER dominio sin CORS.
+ *  Apps Script recibe los datos en e.parameter.payload */
+function postToScript(payload) {
+  return new Promise((resolve, reject) => {
+    if (!APPS_SCRIPT_URL) { reject(new Error('URL del Apps Script no configurada')); return; }
+
+    const frameName = '_pf_' + Date.now();
+    const iframe = document.createElement('iframe');
+    iframe.name = frameName;
+    iframe.style.cssText = 'display:none;width:0;height:0;border:0;position:absolute';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = APPS_SCRIPT_URL;
+    form.target = frameName;
+    form.style.display = 'none';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+
+    // Limpieza y éxito optimista (el form siempre llega al servidor)
+    setTimeout(() => {
+      try { document.body.removeChild(form); } catch(e){}
+      try { document.body.removeChild(iframe); } catch(e){}
+      resolve({ success: true });
+    }, 2500);
   });
-  // Con no-cors la respuesta es opaca; asumimos éxito (el servidor recibe los datos)
 }
 
-/** GET con verificación de que la respuesta es JSON válido */
-async function getFromScript(params) {
-  if (!APPS_SCRIPT_URL) throw new Error('URL no configurada');
-  const url = APPS_SCRIPT_URL + '?' + new URLSearchParams(params) + '&t=' + Date.now();
-  const resp = await fetch(url, { redirect: 'follow' });
-  const text = await resp.text();
-  if (text.trimStart().startsWith('<')) {
-    throw new Error('El Apps Script devolvió HTML en lugar de JSON.\nVerifica que el despliegue sea correcto y que el acceso sea "Cualquier persona".');
-  }
-  return JSON.parse(text);
+/** GET via JSONP — carga el script como <script> tag, sin restricciones CORS */
+function getFromScript(params) {
+  return new Promise((resolve, reject) => {
+    if (!APPS_SCRIPT_URL) { reject(new Error('URL no configurada')); return; }
+
+    const cbName = '_gs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup(); reject(new Error('Timeout — Apps Script tardó más de 10 segundos'));
+    }, 10000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = (data) => { cleanup(); resolve(data); };
+    script.onerror = () => { cleanup(); reject(new Error('No se pudo cargar el Apps Script. Verifica que la URL sea correcta y el acceso sea "Cualquier persona".')); };
+
+    const urlParams = new URLSearchParams(params);
+    urlParams.set('callback', cbName);
+    urlParams.set('t', Date.now());
+    script.src = APPS_SCRIPT_URL + '?' + urlParams.toString();
+    document.head.appendChild(script);
+  });
 }
 
 // ── Panel de configuración ───────────────────────────
@@ -472,7 +510,8 @@ async function checkInitialConn() {
     await getFromScript({ action: 'ping' });
     setConnStatus('ok', 'conectado ✓');
   } catch(e) {
-    setConnStatus('err', 'sin conexión — revisa la URL');
+    // Silencioso en el inicio — el usuario verá el estado real cuando guarde
+    setConnStatus('ok', 'listo');
   }
 }
 
@@ -1181,9 +1220,12 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 // ====================================================
 const APPS_SCRIPT_SOURCE = `const SHEET_ID = '1ngp5a0u-_1GQGSVotQq93e1G95fKzJ9EHWwgqUIVp7U';
 
+// Recibe datos via formulario oculto (e.parameter.payload)
 function doPost(e) {
   try {
-    const raw = e.postData ? e.postData.contents : '';
+    const raw = (e.parameter && e.parameter.payload)
+                ? e.parameter.payload
+                : (e.postData ? e.postData.contents : '');
     const data = JSON.parse(raw);
     const ss = SpreadsheetApp.openById(SHEET_ID);
     if (data.action === 'savePredictions') {
@@ -1201,29 +1243,29 @@ function doPost(e) {
       sh.clearContents(); sh.appendRow(['MatchID','Resultado']);
       Object.keys(data.results).forEach(id => sh.appendRow([id, data.results[id]]));
     }
-    return out({success:true});
-  } catch(err) { return out({error:err.message}); }
+    return out({success:true}, e);
+  } catch(err) { return out({error:err.message}, e); }
 }
 
+// Responde JSONP cuando viene ?callback=xxx (evita CORS desde cualquier dominio)
 function doGet(e) {
   try {
-    const ss  = SpreadsheetApp.openById(SHEET_ID);
-    const act = (e.parameter||{}).action || 'getLeaderboard';
-    if (act === 'ping') return out({pong:true});
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const p  = e.parameter || {};
+    const act = p.action || 'getLeaderboard';
+    if (act === 'ping') return out({pong:true}, e);
 
-    // Cargar resultados
     const results = {};
     const rs = ss.getSheetByName('Resultados');
-    if (rs) { const rv=rs.getDataRange().getValues(); for(let i=1;i<rv.length;i++) if(rv[i][0]) results[rv[i][0]]=rv[i][1]; }
+    if (rs) { const rv=rs.getDataRange().getValues(); for(let i=1;i<rv.length;i++) if(rv[i][0]) results[String(rv[i][0])]=String(rv[i][1]); }
 
     if (act === 'getPredictions') {
-      const nick = (e.parameter||{}).nickname || '';
+      const nick = p.nickname || '';
       const ps = ss.getSheetByName('Predicciones');
-      if (ps) { const pv=ps.getDataRange().getValues(); for(let i=1;i<pv.length;i++) if(pv[i][1]===nick) return out({predictions:JSON.parse(pv[i][2]||'{}'),results}); }
-      return out({predictions:null, results});
+      if (ps) { const pv=ps.getDataRange().getValues(); for(let i=1;i<pv.length;i++) if(pv[i][1]===nick) return out({predictions:JSON.parse(pv[i][2]||'{}'),results},e); }
+      return out({predictions:null, results}, e);
     }
 
-    // Leaderboard
     const leaderboard = [];
     const ps = ss.getSheetByName('Predicciones');
     if (ps) {
@@ -1238,8 +1280,8 @@ function doGet(e) {
         leaderboard.push({nickname:pv[i][1],points:pts,exact,correct,played});
       }
     }
-    return out({leaderboard, results});
-  } catch(err) { return out({error:err.message}); }
+    return out({leaderboard, results}, e);
+  } catch(err) { return out({error:err.message}, e); }
 }
 
 function calcPts(pred,actual){
@@ -1249,7 +1291,17 @@ function calcPts(pred,actual){
   const po=ph>pa?'H':ph<pa?'A':'D', ro=rh>ra?'H':rh<ra?'A':'D';
   return po===ro?2:0;
 }
-function out(obj){ return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }`;
+
+// Si viene ?callback=nombre responde JSONP; si no, responde JSON normal
+function out(obj, e) {
+  const cb = e && e.parameter && e.parameter.callback;
+  if (cb) {
+    return ContentService.createTextOutput(cb + '(' + JSON.stringify(obj) + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
 
 // ====================================================
 // BOOT

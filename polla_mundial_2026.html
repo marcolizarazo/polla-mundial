@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Polla Mundial 2026</title>
 <style>
-:root{--bg:#0a0e1a;--card:#131929;--card2:#1a2235;--accent:#e8b923;--accent2:#c0392b;--green:#27ae60;--blue:#2980b9;--text:#f0f0f0;--muted:#8892a4;--border:#2a3450;--radius:10px}
+:root{--bg:#111111;--card:#1c1c1c;--card2:#262626;--accent:#269757;--accent2:#c0392b;--green:#22c55e;--blue:#2563eb;--text:#f0f0f0;--muted:#69778e;--border:#2d2d2d;--radius:10px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
 a{color:var(--accent)}
 
 /* HEADER */
-header{background:linear-gradient(135deg,#0a0e1a 0%,#1a1040 50%,#0a1a30 100%);border-bottom:2px solid var(--accent);padding:20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
-header h1{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#e8b923,#fff,#e8b923);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header{background:linear-gradient(135deg,#111111 0%,#1a2e1f 50%,#111111 100%);border-bottom:3px solid var(--accent);padding:20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.6)}
+header h1{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#269757,#ffffff,#269757);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 header p{color:var(--muted);font-size:.9rem;margin-top:4px}
 .header-btns{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
 .btn{border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
-.btn-gold{background:var(--accent);color:#000}
-.btn-gold:hover{background:#f5cc2a;transform:translateY(-1px)}
+.btn-gold{background:var(--accent);color:#fff}
+.btn-gold:hover{background:#1e7a45;transform:translateY(-1px)}
 .btn-outline{background:transparent;border:1px solid var(--muted);color:var(--text)}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
 .btn-green{background:var(--green);color:#fff}
@@ -227,7 +227,6 @@ details[open] summary::before{content:'▼'}
     <button class="btn btn-outline btn-sm" onclick="toggleTestMode()">🧪 Modo Prueba</button>
     <button class="btn btn-outline btn-sm" onclick="openAdmin()">⚙️ Admin</button>
     <button class="btn btn-blue btn-sm" onclick="loadLeaderboard()">🏅 Actualizar Tabla</button>
-    <button class="btn btn-gold btn-sm" onclick="openConfig()">🔗 Configurar Sheets</button>
   </div>
   <div style="margin-top:8px;display:flex;justify-content:center">
     <div class="conn-wrap" id="connWrap">
@@ -288,6 +287,7 @@ details[open] summary::before{content:'▼'}
         <div id="adminMatchList"></div>
         <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-red btn-sm" onclick="saveAllResults()">💾 Guardar todos los resultados</button>
+          <button class="btn btn-gold btn-sm" onclick="openConfig()">🔗 Configurar Sheets</button>
           <button class="btn btn-outline btn-sm" onclick="closeAdmin()">✕ Cerrar</button>
         </div>
       </div>
@@ -392,7 +392,7 @@ function setConnStatus(state, msg) {
   const lbl = document.getElementById('connLabel');
   if (!dot) return;
   dot.className = 'conn-dot conn-' + state;
-  lbl.textContent = 'Google Sheets: ' + msg;
+  lbl.textContent = state === 'ok' ? 'Conectado' : msg;
 }
 
 /** POST via formulario oculto en iframe — funciona desde CUALQUIER dominio sin CORS.
@@ -530,21 +530,21 @@ const PHASES = [
 ];
 
 const MATCHES = [
-  // ── GRUPO A: México · Corea del Sur · Sudáfrica · Play. UEFA-D ──
+  // ── GRUPO A: México · Corea del Sur · Sudáfrica · Chequia ──
   {id:'A1_1',phase:'md1',group:'A',home:'México',away:'Sudáfrica',hf:'🇲🇽',af:'🇿🇦',dt:'2026-06-11T18:00:00Z',venue:'Estadio Azteca, Cd. México'},
-  {id:'A1_2',phase:'md1',group:'A',home:'Corea del Sur',away:'Play. UEFA-D',hf:'🇰🇷',af:'🏳️',dt:'2026-06-12T01:00:00Z',venue:'Estadio Akron, Guadalajara'},
-  {id:'A2_1',phase:'md2',group:'A',home:'Play. UEFA-D',away:'Sudáfrica',hf:'🏳️',af:'🇿🇦',dt:'2026-06-18T16:00:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
+  {id:'A1_2',phase:'md1',group:'A',home:'Corea del Sur',away:'Chequia',hf:'🇰🇷',af:'🇨🇿',dt:'2026-06-12T01:00:00Z',venue:'Estadio Akron, Guadalajara'},
+  {id:'A2_1',phase:'md2',group:'A',home:'Chequia',away:'Sudáfrica',hf:'🇨🇿',af:'🇿🇦',dt:'2026-06-18T16:00:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
   {id:'A2_2',phase:'md2',group:'A',home:'México',away:'Corea del Sur',hf:'🇲🇽',af:'🇰🇷',dt:'2026-06-19T00:00:00Z',venue:'Estadio Akron, Guadalajara'},
-  {id:'A3_1',phase:'md3',group:'A',home:'Play. UEFA-D',away:'México',hf:'🏳️',af:'🇲🇽',dt:'2026-06-25T00:00:00Z',venue:'Estadio Azteca, Cd. México'},
+  {id:'A3_1',phase:'md3',group:'A',home:'Chequia',away:'México',hf:'🇨🇿',af:'🇲🇽',dt:'2026-06-25T00:00:00Z',venue:'Estadio Azteca, Cd. México'},
   {id:'A3_2',phase:'md3',group:'A',home:'Sudáfrica',away:'Corea del Sur',hf:'🇿🇦',af:'🇰🇷',dt:'2026-06-25T00:00:00Z',venue:'Estadio BBVA, Monterrey'},
 
-  // ── GRUPO B: Canadá · Suiza · Qatar · Play. UEFA-A ──
-  {id:'B1_1',phase:'md1',group:'B',home:'Canadá',away:'Play. UEFA-A',hf:'🇨🇦',af:'🏳️',dt:'2026-06-12T19:00:00Z',venue:'BMO Field, Toronto'},
+  // ── GRUPO B: Canadá · Suiza · Qatar · Bosnia y Herz. ──
+  {id:'B1_1',phase:'md1',group:'B',home:'Canadá',away:'Bosnia y Herz.',hf:'🇨🇦',af:'🇧🇦',dt:'2026-06-12T19:00:00Z',venue:'BMO Field, Toronto'},
   {id:'B1_2',phase:'md1',group:'B',home:'Qatar',away:'Suiza',hf:'🇶🇦',af:'🇨🇭',dt:'2026-06-13T19:00:00Z',venue:"Levi's Stadium, San Francisco"},
-  {id:'B2_1',phase:'md2',group:'B',home:'Suiza',away:'Play. UEFA-A',hf:'🇨🇭',af:'🏳️',dt:'2026-06-18T19:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
+  {id:'B2_1',phase:'md2',group:'B',home:'Suiza',away:'Bosnia y Herz.',hf:'🇨🇭',af:'🇧🇦',dt:'2026-06-18T19:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
   {id:'B2_2',phase:'md2',group:'B',home:'Canadá',away:'Qatar',hf:'🇨🇦',af:'🇶🇦',dt:'2026-06-18T22:00:00Z',venue:'BC Place, Vancouver'},
   {id:'B3_1',phase:'md3',group:'B',home:'Suiza',away:'Canadá',hf:'🇨🇭',af:'🇨🇦',dt:'2026-06-24T19:00:00Z',venue:'BC Place, Vancouver'},
-  {id:'B3_2',phase:'md3',group:'B',home:'Play. UEFA-A',away:'Qatar',hf:'🏳️',af:'🇶🇦',dt:'2026-06-24T19:00:00Z',venue:'Lumen Field, Seattle'},
+  {id:'B3_2',phase:'md3',group:'B',home:'Bosnia y Herz.',away:'Qatar',hf:'🇧🇦',af:'🇶🇦',dt:'2026-06-24T19:00:00Z',venue:'Lumen Field, Seattle'},
 
   // ── GRUPO C: Brasil · Marruecos · Haití · Escocia ──
   {id:'C1_1',phase:'md1',group:'C',home:'Brasil',away:'Marruecos',hf:'🇧🇷',af:'🇲🇦',dt:'2026-06-13T22:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
@@ -554,12 +554,12 @@ const MATCHES = [
   {id:'C3_1',phase:'md3',group:'C',home:'Escocia',away:'Brasil',hf:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',af:'🇧🇷',dt:'2026-06-24T22:00:00Z',venue:'Hard Rock Stadium, Miami'},
   {id:'C3_2',phase:'md3',group:'C',home:'Marruecos',away:'Haití',hf:'🇲🇦',af:'🇭🇹',dt:'2026-06-24T22:00:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
 
-  // ── GRUPO D: USA · Paraguay · Australia · Play. UEFA-C ──
+  // ── GRUPO D: USA · Paraguay · Australia · Turquía ──
   {id:'D1_1',phase:'md1',group:'D',home:'USA',away:'Paraguay',hf:'🇺🇸',af:'🇵🇾',dt:'2026-06-13T01:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
-  {id:'D1_2',phase:'md1',group:'D',home:'Australia',away:'Play. UEFA-C',hf:'🇦🇺',af:'🏳️',dt:'2026-06-13T04:00:00Z',venue:'BC Place, Vancouver'},
+  {id:'D1_2',phase:'md1',group:'D',home:'Australia',away:'Turquía',hf:'🇦🇺',af:'🇹🇷',dt:'2026-06-13T04:00:00Z',venue:'BC Place, Vancouver'},
   {id:'D2_1',phase:'md2',group:'D',home:'USA',away:'Australia',hf:'🇺🇸',af:'🇦🇺',dt:'2026-06-19T19:00:00Z',venue:'Lumen Field, Seattle'},
-  {id:'D2_2',phase:'md2',group:'D',home:'Play. UEFA-C',away:'Paraguay',hf:'🏳️',af:'🇵🇾',dt:'2026-06-20T04:00:00Z',venue:"Levi's Stadium, San Francisco"},
-  {id:'D3_1',phase:'md3',group:'D',home:'Play. UEFA-C',away:'USA',hf:'🏳️',af:'🇺🇸',dt:'2026-06-26T02:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
+  {id:'D2_2',phase:'md2',group:'D',home:'Turquía',away:'Paraguay',hf:'🇹🇷',af:'🇵🇾',dt:'2026-06-20T04:00:00Z',venue:"Levi's Stadium, San Francisco"},
+  {id:'D3_1',phase:'md3',group:'D',home:'Turquía',away:'USA',hf:'🇹🇷',af:'🇺🇸',dt:'2026-06-26T02:00:00Z',venue:'SoFi Stadium, Los Ángeles'},
   {id:'D3_2',phase:'md3',group:'D',home:'Paraguay',away:'Australia',hf:'🇵🇾',af:'🇦🇺',dt:'2026-06-26T02:00:00Z',venue:"Levi's Stadium, San Francisco"},
 
   // ── GRUPO E: Alemania · Curazao · Costa de Marfil · Ecuador ──
@@ -570,12 +570,12 @@ const MATCHES = [
   {id:'E3_1',phase:'md3',group:'E',home:'Curazao',away:'Costa de Marfil',hf:'🇨🇼',af:'🇨🇮',dt:'2026-06-25T20:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
   {id:'E3_2',phase:'md3',group:'E',home:'Ecuador',away:'Alemania',hf:'🇪🇨',af:'🇩🇪',dt:'2026-06-25T20:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
 
-  // ── GRUPO F: Países Bajos · Japón · Túnez · Play. UEFA-B ──
+  // ── GRUPO F: Países Bajos · Japón · Túnez · Suecia ──
   {id:'F1_1',phase:'md1',group:'F',home:'Países Bajos',away:'Japón',hf:'🇳🇱',af:'🇯🇵',dt:'2026-06-14T19:00:00Z',venue:'AT&T Stadium, Dallas'},
-  {id:'F1_2',phase:'md1',group:'F',home:'Play. UEFA-B',away:'Túnez',hf:'🏳️',af:'🇹🇳',dt:'2026-06-15T01:00:00Z',venue:'Estadio BBVA, Monterrey'},
-  {id:'F2_1',phase:'md2',group:'F',home:'Países Bajos',away:'Play. UEFA-B',hf:'🇳🇱',af:'🏳️',dt:'2026-06-20T16:00:00Z',venue:'NRG Stadium, Houston'},
+  {id:'F1_2',phase:'md1',group:'F',home:'Suecia',away:'Túnez',hf:'🇸🇪',af:'🇹🇳',dt:'2026-06-15T01:00:00Z',venue:'Estadio BBVA, Monterrey'},
+  {id:'F2_1',phase:'md2',group:'F',home:'Países Bajos',away:'Suecia',hf:'🇳🇱',af:'🇸🇪',dt:'2026-06-20T16:00:00Z',venue:'NRG Stadium, Houston'},
   {id:'F2_2',phase:'md2',group:'F',home:'Túnez',away:'Japón',hf:'🇹🇳',af:'🇯🇵',dt:'2026-06-21T03:00:00Z',venue:'Estadio BBVA, Monterrey'},
-  {id:'F3_1',phase:'md3',group:'F',home:'Japón',away:'Play. UEFA-B',hf:'🇯🇵',af:'🏳️',dt:'2026-06-25T22:00:00Z',venue:'AT&T Stadium, Dallas'},
+  {id:'F3_1',phase:'md3',group:'F',home:'Japón',away:'Suecia',hf:'🇯🇵',af:'🇸🇪',dt:'2026-06-25T22:00:00Z',venue:'AT&T Stadium, Dallas'},
   {id:'F3_2',phase:'md3',group:'F',home:'Túnez',away:'Países Bajos',hf:'🇹🇳',af:'🇳🇱',dt:'2026-06-25T22:00:00Z',venue:'Arrowhead Stadium, Kansas City'},
 
   // ── GRUPO G: Bélgica · Egipto · Irán · Nueva Zelanda ──
@@ -594,13 +594,13 @@ const MATCHES = [
   {id:'H3_1',phase:'md3',group:'H',home:'Cabo Verde',away:'Arabia Saudita',hf:'🇨🇻',af:'🇸🇦',dt:'2026-06-26T00:00:00Z',venue:'NRG Stadium, Houston'},
   {id:'H3_2',phase:'md3',group:'H',home:'Uruguay',away:'España',hf:'🇺🇾',af:'🇪🇸',dt:'2026-06-26T00:00:00Z',venue:'Estadio Akron, Guadalajara'},
 
-  // ── GRUPO I: Francia · Senegal · Noruega · Play. IC-2 ──
+  // ── GRUPO I: Francia · Senegal · Noruega · Irak ──
   {id:'I1_1',phase:'md1',group:'I',home:'Francia',away:'Senegal',hf:'🇫🇷',af:'🇸🇳',dt:'2026-06-16T19:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
-  {id:'I1_2',phase:'md1',group:'I',home:'Play. IC-2',away:'Noruega',hf:'🏳️',af:'🇳🇴',dt:'2026-06-16T22:00:00Z',venue:'Gillette Stadium, Boston'},
-  {id:'I2_1',phase:'md2',group:'I',home:'Francia',away:'Play. IC-2',hf:'🇫🇷',af:'🏳️',dt:'2026-06-22T21:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
+  {id:'I1_2',phase:'md1',group:'I',home:'Irak',away:'Noruega',hf:'🇮🇶',af:'🇳🇴',dt:'2026-06-16T22:00:00Z',venue:'Gillette Stadium, Boston'},
+  {id:'I2_1',phase:'md2',group:'I',home:'Francia',away:'Irak',hf:'🇫🇷',af:'🇮🇶',dt:'2026-06-22T21:00:00Z',venue:'Lincoln Financial Field, Filadelfia'},
   {id:'I2_2',phase:'md2',group:'I',home:'Noruega',away:'Senegal',hf:'🇳🇴',af:'🇸🇳',dt:'2026-06-23T00:00:00Z',venue:'MetLife Stadium, Nueva York/NJ'},
   {id:'I3_1',phase:'md3',group:'I',home:'Noruega',away:'Francia',hf:'🇳🇴',af:'🇫🇷',dt:'2026-06-26T19:00:00Z',venue:'Gillette Stadium, Boston'},
-  {id:'I3_2',phase:'md3',group:'I',home:'Senegal',away:'Play. IC-2',hf:'🇸🇳',af:'🏳️',dt:'2026-06-26T19:00:00Z',venue:'BMO Field, Toronto'},
+  {id:'I3_2',phase:'md3',group:'I',home:'Senegal',away:'Irak',hf:'🇸🇳',af:'🇮🇶',dt:'2026-06-26T19:00:00Z',venue:'BMO Field, Toronto'},
 
   // ── GRUPO J: Argentina · Argelia · Austria · Jordania ──
   {id:'J1_1',phase:'md1',group:'J',home:'Argentina',away:'Argelia',hf:'🇦🇷',af:'🇩🇿',dt:'2026-06-17T00:00:00Z',venue:'Arrowhead Stadium, Kansas City'},
@@ -610,13 +610,13 @@ const MATCHES = [
   {id:'J3_1',phase:'md3',group:'J',home:'Argelia',away:'Austria',hf:'🇩🇿',af:'🇦🇹',dt:'2026-06-28T01:00:00Z',venue:'Arrowhead Stadium, Kansas City'},
   {id:'J3_2',phase:'md3',group:'J',home:'Jordania',away:'Argentina',hf:'🇯🇴',af:'🇦🇷',dt:'2026-06-28T01:00:00Z',venue:'AT&T Stadium, Dallas'},
 
-  // ── GRUPO K: Portugal · Colombia · Uzbekistán · Play. IC-1 ──
-  {id:'K1_1',phase:'md1',group:'K',home:'Portugal',away:'Play. IC-1',hf:'🇵🇹',af:'🏳️',dt:'2026-06-17T17:00:00Z',venue:'NRG Stadium, Houston'},
+  // ── GRUPO K: Portugal · Colombia · Uzbekistán · R.D. Congo ──
+  {id:'K1_1',phase:'md1',group:'K',home:'Portugal',away:'R.D. Congo',hf:'🇵🇹',af:'🇨🇩',dt:'2026-06-17T17:00:00Z',venue:'NRG Stadium, Houston'},
   {id:'K1_2',phase:'md1',group:'K',home:'Uzbekistán',away:'Colombia',hf:'🇺🇿',af:'🇨🇴',dt:'2026-06-18T01:00:00Z',venue:'Estadio Azteca, Cd. México'},
   {id:'K2_1',phase:'md2',group:'K',home:'Portugal',away:'Uzbekistán',hf:'🇵🇹',af:'🇺🇿',dt:'2026-06-23T17:00:00Z',venue:'NRG Stadium, Houston'},
-  {id:'K2_2',phase:'md2',group:'K',home:'Colombia',away:'Play. IC-1',hf:'🇨🇴',af:'🏳️',dt:'2026-06-24T01:00:00Z',venue:'Estadio Akron, Guadalajara'},
+  {id:'K2_2',phase:'md2',group:'K',home:'Colombia',away:'R.D. Congo',hf:'🇨🇴',af:'🇨🇩',dt:'2026-06-24T01:00:00Z',venue:'Estadio Akron, Guadalajara'},
   {id:'K3_1',phase:'md3',group:'K',home:'Colombia',away:'Portugal',hf:'🇨🇴',af:'🇵🇹',dt:'2026-06-27T23:30:00Z',venue:'Hard Rock Stadium, Miami'},
-  {id:'K3_2',phase:'md3',group:'K',home:'Play. IC-1',away:'Uzbekistán',hf:'🏳️',af:'🇺🇿',dt:'2026-06-27T23:30:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
+  {id:'K3_2',phase:'md3',group:'K',home:'R.D. Congo',away:'Uzbekistán',hf:'🇨🇩',af:'🇺🇿',dt:'2026-06-27T23:30:00Z',venue:'Mercedes-Benz Stadium, Atlanta'},
 
   // ── GRUPO L: Inglaterra · Croacia · Ghana · Panamá ──
   {id:'L1_1',phase:'md1',group:'L',home:'Inglaterra',away:'Croacia',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇭🇷',dt:'2026-06-17T19:00:00Z',venue:'AT&T Stadium, Dallas'},
